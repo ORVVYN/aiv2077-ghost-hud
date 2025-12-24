@@ -32,8 +32,13 @@ const PlasmaBioReactor = ({ dailySteps, targetSteps }) => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.5, duration: 0.6 }}
     >
-      {/* Floating arc with soft backdrop blur */}
-      <div className="relative w-24 h-24 p-2 rounded" style={{ backdropFilter: 'blur(10px)', background: 'rgba(0, 0, 0, 0.1)' }}>
+      {/* Ultra-thin arc container */}
+      <div className="relative w-24 h-24">
+        {/* L-shaped corner brackets - WARNING YELLOW */}
+        <div className="absolute -top-1 -left-1 w-3 h-3 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.3)' }} />
+        <div className="absolute -top-1 -right-1 w-3 h-3 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.3)' }} />
+        <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.3)' }} />
+        <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.3)' }} />
         {/* SVG Arc - 270° from top-left */}
         <svg className="w-full h-full" viewBox="0 0 100 100">
           {/* Background arc - WARNING YELLOW */}
