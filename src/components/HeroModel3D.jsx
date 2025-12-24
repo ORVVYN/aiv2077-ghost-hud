@@ -1,0 +1,264 @@
+import { useRef, useEffect } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import * as THREE from 'three'
+
+/**
+ * HeroSilhouette - Placeholder 3D character mesh
+ * High-poly humanoid silhouette with rim-lighting
+ */
+function HeroSilhouette({ color, rimColor, glowColor }) {
+  const meshRef = useRef()
+  const outlineRef = useRef()
+
+  // Idle breathing animation
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+
+    // Gentle breathing motion
+    if (meshRef.current) {
+      meshRef.current.position.y = Math.sin(time * 0.5) * 0.05
+      meshRef.current.rotation.y = Math.sin(time * 0.2) * 0.02
+    }
+
+    // Pulsing outline
+    if (outlineRef.current) {
+      outlineRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.01)
+    }
+  })
+
+  // Create humanoid silhouette geometry
+  const createHumanoidGeometry = () => {
+    const group = new THREE.Group()
+
+    // Torso (main body)
+    const torsoGeometry = new THREE.CapsuleGeometry(0.4, 0.8, 8, 16)
+    const torso = new THREE.Mesh(torsoGeometry)
+    torso.position.y = 0.5
+    group.add(torso)
+
+    // Head
+    const headGeometry = new THREE.SphereGeometry(0.25, 16, 16)
+    const head = new THREE.Mesh(headGeometry)
+    head.position.y = 1.3
+    group.add(head)
+
+    // Shoulders
+    const shoulderGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.3)
+    const shoulders = new THREE.Mesh(shoulderGeometry)
+    shoulders.position.y = 1.0
+    group.add(shoulders)
+
+    // Arms (left)
+    const armGeometry = new THREE.CapsuleGeometry(0.12, 0.6, 6, 12)
+    const leftArm = new THREE.Mesh(armGeometry)
+    leftArm.position.set(-0.5, 0.6, 0)
+    leftArm.rotation.z = 0.3
+    group.add(leftArm)
+
+    // Arms (right)
+    const rightArm = new THREE.Mesh(armGeometry)
+    rightArm.position.set(0.5, 0.6, 0)
+    rightArm.rotation.z = -0.3
+    group.add(rightArm)
+
+    // Legs (left)
+    const legGeometry = new THREE.CapsuleGeometry(0.15, 0.7, 6, 12)
+    const leftLeg = new THREE.Mesh(legGeometry)
+    leftLeg.position.set(-0.2, -0.3, 0)
+    group.add(leftLeg)
+
+    // Legs (right)
+    const rightLeg = new THREE.Mesh(legGeometry)
+    rightLeg.position.set(0.2, -0.3, 0)
+    group.add(rightLeg)
+
+    return group
+  }
+
+  return (
+    <group ref={meshRef}>
+      {/* Main silhouette with holographic shader */}
+      <primitive object={createHumanoidGeometry()}>
+        <meshStandardMaterial
+          color={color}
+          metalness={0.9}
+          roughness={0.1}
+          emissive={glowColor}
+          emissiveIntensity={0.5}
+          transparent
+          opacity={0.8}
+        />
+      </primitive>
+
+      {/* Fresnel/Rim-light outline effect (cyan edges) */}
+      <group ref={outlineRef}>
+        <primitive object={createHumanoidGeometry()}>
+          <meshBasicMaterial
+            color={rimColor}
+            transparent
+            opacity={0.6}
+            side={THREE.BackSide}
+          />
+        </primitive>
+      </group>
+    </group>
+  )
+}
+
+/**
+ * HolographicPlatform - Glowing ring under hero
+ */
+function HolographicPlatform({ color }) {
+  const ringRef = useRef()
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    if (ringRef.current) {
+      ringRef.current.rotation.z = time * 0.3
+    }
+  })
+
+  return (
+    <group position={[0, -0.7, 0]}>
+      {/* Outer ring */}
+      <mesh ref={ringRef} rotation={[-Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.2, 0.02, 16, 64]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.6}
+        />
+      </mesh>
+
+      {/* Inner ring */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.9, 0.015, 16, 64]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.4}
+        />
+      </mesh>
+
+      {/* Holographic grid disc */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+        <circleGeometry args={[1.2, 64]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.05}
+          wireframe
+        />
+      </mesh>
+    </group>
+  )
+}
+
+/**
+ * Scene - 3D environment setup
+ */
+function Scene({ hero }) {
+  return (
+    <>
+      {/* Camera */}
+      <PerspectiveCamera makeDefault position={[0, 1, 4]} fov={50} />
+
+      {/* Lights */}
+      <ambientLight intensity={0.4} />
+
+      {/* Key light (front) */}
+      <spotLight
+        position={[2, 3, 3]}
+        angle={0.3}
+        penumbra={0.5}
+        intensity={1.5}
+        color="#ffffff"
+        castShadow
+      />
+
+      {/* Rim light (back-left) - Creates the blue rim glow */}
+      <spotLight
+        position={[-3, 2, -2]}
+        angle={0.4}
+        penumbra={0.8}
+        intensity={2.0}
+        color={hero.appearance.rimLightColor}
+      />
+
+      {/* Rim light (back-right) */}
+      <spotLight
+        position={[3, 2, -2]}
+        angle={0.4}
+        penumbra={0.8}
+        intensity={1.5}
+        color={hero.appearance.rimLightColor}
+      />
+
+      {/* Fill light (bottom) */}
+      <pointLight
+        position={[0, -1, 2]}
+        intensity={0.8}
+        color={hero.appearance.primaryColor}
+      />
+
+      {/* Holographic platform under hero */}
+      <HolographicPlatform color={hero.appearance.glowColor} />
+
+      {/* Hero character */}
+      <HeroSilhouette
+        color={hero.appearance.primaryColor}
+        rimColor={hero.appearance.rimLightColor}
+        glowColor={hero.appearance.glowColor}
+      />
+
+      {/* Orbit controls (touch-friendly) */}
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        minPolarAngle={Math.PI / 4}
+        maxPolarAngle={Math.PI / 1.5}
+        autoRotate
+        autoRotateSpeed={0.5}
+      />
+
+      {/* Volumetric fog effect */}
+      <fog attach="fog" args={['#050505', 3, 8]} />
+    </>
+  )
+}
+
+/**
+ * HeroModel3D Component
+ * Renders the 3D hero in a volumetric chamber
+ */
+const HeroModel3D = ({ hero }) => {
+  return (
+    <div className="absolute inset-0 z-10">
+      {/* Canvas with transparent background */}
+      <Canvas
+        gl={{
+          alpha: true,
+          antialias: true,
+          powerPreference: 'high-performance'
+        }}
+        style={{ background: 'transparent' }}
+      >
+        <Scene hero={hero} />
+      </Canvas>
+
+      {/* Holographic scanline overlay - Only on character */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <div
+          className="w-full max-w-2xl h-[70vh]"
+          style={{
+            background: 'repeating-linear-gradient(0deg, rgba(0, 229, 255, 0.15) 0px, transparent 1px, transparent 3px)',
+            mixBlendMode: 'screen'
+          }}
+        />
+      </div>
+    </div>
+  )
+}
+
+export default HeroModel3D

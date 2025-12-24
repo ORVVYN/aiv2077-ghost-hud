@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply h-full;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  body {
+    @apply h-full m-0 p-0 overflow-hidden;
+    @apply bg-obsidian font-tactical text-cyan-neon;
+    font-family: 'Rajdhani', 'Orbitron', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+  }
+
+  #root {
+    @apply h-full w-full;
+  }
+}
+
+@layer components {
+  /* Glassmorphic Tactical Panel */
+  .glass-panel {
+    @apply bg-obsidian-800/40 backdrop-blur-tactical;
+    @apply border border-cyan-neon/30;
+    @apply shadow-tactical;
+  }
+
+  /* ZZO-Style Skewed Container */
+  .skew-container {
+    @apply transform -skew-x-6;
+  }
+
+  .skew-content {
+    @apply transform skew-x-6;
+  }
+
+  /* Neon Border Effect */
+  .neon-border {
+    @apply relative;
+    @apply border border-cyan-neon/50;
+  }
+
+  .neon-border::before {
+    content: '';
+    @apply absolute inset-0 -z-10;
+    @apply bg-gradient-to-r from-cyan-neon/20 to-plasma-purple/20;
+    filter: blur(10px);
+  }
+
+  /* Scanline Effect */
+  .scanline {
+    @apply relative overflow-hidden;
+  }
+
+  .scanline::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-px;
+    @apply bg-gradient-to-r from-transparent via-cyan-neon to-transparent;
+    @apply opacity-30;
+    animation: scan 2s linear infinite;
+  }
+
+  /* Chromatic Aberration Text */
+  .chromatic-text {
+    @apply relative inline-block;
+    animation: chromatic 2s ease-in-out infinite;
+  }
+
+  /* Tactical Button */
+  .tactical-button {
+    @apply relative px-6 py-3;
+    @apply font-display font-bold uppercase tracking-wider;
+    @apply bg-gradient-to-r from-cyan-dim to-cyan-neon;
+    @apply text-obsidian;
+    @apply transform -skew-x-6;
+    @apply transition-all duration-200;
+    @apply shadow-neon-cyan;
+  }
+
+  .tactical-button:active {
+    @apply scale-95 shadow-neon-cyan/50;
+  }
+
+  .tactical-button span {
+    @apply block transform skew-x-6;
+  }
+
+  /* Grid Background */
+  .grid-background {
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center center;
+  }
+
+  /* Glitch Effect */
+  .glitch {
+    @apply relative;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    @apply absolute top-0 left-0 w-full h-full;
+  }
+
+  .glitch::before {
+    @apply text-cyan-neon;
+    animation: glitch-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  }
+
+  .glitch::after {
+    @apply text-critical-red;
+    animation: glitch-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+    clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  }
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+
+  .text-glow-strong {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes glitch-1 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(-2px, -2px);
+  }
+  66% {
+    transform: translate(2px, 2px);
+  }
+}
+
+@keyframes glitch-2 {
+  0%, 100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(2px, 2px);
+  }
+  66% {
+    transform: translate(-2px, -2px);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* GLOBAL TACTICAL CRT OVERLAYS */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Scanline Effect - Thin horizontal lines (STATIC, no animation) */
+.crt-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    transparent 1px,
+    transparent 2px
+  );
+  opacity: 0.6;
+}
+
+/* Dot Matrix Overlay - Physical CRT/Military Display Texture */
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 229, 255, 0.08) 0.5px,
+    transparent 0.5px
+  );
+  background-size: 4px 4px;
+  opacity: 0.5;
+}
+
+/* Ghost HUD - Ultra-thin transparent panels */
+.ghost-panel {
+  background: rgba(0, 229, 255, 0.02);
+  border: 0.5px solid rgba(0, 229, 255, 0.15);
+  backdrop-filter: blur(5px);
+}
+
+/* High-tech mesh grid overlay */
+.mesh-overlay {
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.02) 0.5px, transparent 0.5px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 0.5px, transparent 0.5px);
+  background-size: 20px 20px;
+}
