@@ -78,30 +78,76 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
 
   return (
     <group ref={meshRef}>
-      {/* Main silhouette - 70% transparent hologram */}
+      {/* Main silhouette - 70% CYAN-tinted transparent hologram */}
       <primitive object={createHumanoidGeometry()}>
         <meshStandardMaterial
-          color={color}
-          metalness={0.9}
-          roughness={0.1}
-          emissive={glowColor}
-          emissiveIntensity={0.6}
+          color="#00e5ff"
+          metalness={0.95}
+          roughness={0.05}
+          emissive="#00e5ff"
+          emissiveIntensity={0.8}
           transparent
           opacity={0.3}
         />
       </primitive>
 
-      {/* Fresnel/Rim-light outline - Sharp Cyan glow on edges */}
+      {/* Bright Cyan Rim Lighting - Sharp glow on edges */}
       <group ref={outlineRef}>
         <primitive object={createHumanoidGeometry()}>
           <meshBasicMaterial
-            color={rimColor}
+            color="#00e5ff"
             transparent
-            opacity={0.8}
+            opacity={0.9}
             side={THREE.BackSide}
           />
         </primitive>
       </group>
+    </group>
+  )
+}
+
+/**
+ * DigitalDebris - Floating 3D particles (tiny cubes/pixels) orbiting hero
+ */
+function DigitalDebris() {
+  const debrisRef = useRef()
+  const particleCount = 50
+
+  // Create particles
+  const particles = Array.from({ length: particleCount }, (_, i) => {
+    const angle = (i / particleCount) * Math.PI * 2
+    const radius = 1.5 + Math.random() * 0.5
+    const height = (Math.random() - 0.5) * 2.5
+
+    return {
+      position: [
+        Math.cos(angle) * radius,
+        height,
+        Math.sin(angle) * radius
+      ],
+      scale: 0.02 + Math.random() * 0.03,
+      speed: 0.2 + Math.random() * 0.3
+    }
+  })
+
+  useFrame((state) => {
+    if (debrisRef.current) {
+      debrisRef.current.rotation.y = state.clock.getElapsedTime() * 0.1
+    }
+  })
+
+  return (
+    <group ref={debrisRef}>
+      {particles.map((particle, i) => (
+        <mesh key={i} position={particle.position}>
+          <boxGeometry args={[particle.scale, particle.scale, particle.scale]} />
+          <meshBasicMaterial
+            color="#00e5ff"
+            transparent
+            opacity={0.6}
+          />
+        </mesh>
+      ))}
     </group>
   )
 }
@@ -204,6 +250,9 @@ function Scene({ hero }) {
 
       {/* Holographic platform under hero */}
       <HolographicPlatform color={hero.appearance.glowColor} />
+
+      {/* Digital Debris - Floating voxel particles */}
+      <DigitalDebris />
 
       {/* Hero character */}
       <HeroSilhouette

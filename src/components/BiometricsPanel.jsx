@@ -6,9 +6,9 @@ import { motion } from 'framer-motion'
  */
 const BiometricsPanel = ({ stats }) => {
   const statConfig = [
-    { key: 'str', label: 'STR', color: '#ff003c' },
-    { key: 'agi', label: 'AGI', color: '#00e5ff' },
-    { key: 'int', label: 'INT', color: '#a855f7' },
+    { key: 'str', label: 'STR', color: '#facc15' },
+    { key: 'agi', label: 'AGI', color: '#facc15' },
+    { key: 'int', label: 'INT', color: '#facc15' },
     { key: 'sta', label: 'STA', color: '#facc15' }
   ]
 
@@ -19,12 +19,12 @@ const BiometricsPanel = ({ stats }) => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.7, duration: 0.6 }}
     >
-      {/* L-shaped corner brackets frame */}
+      {/* L-shaped corner brackets frame - WARNING YELLOW */}
       <div className="relative">
-        <div className="absolute -top-2 -left-2 w-4 h-4 border-l border-t border-cyan-neon/30" />
-        <div className="absolute -top-2 -right-2 w-4 h-4 border-r border-t border-cyan-neon/30" />
-        <div className="absolute -bottom-2 -left-2 w-4 h-4 border-l border-b border-cyan-neon/30" />
-        <div className="absolute -bottom-2 -right-2 w-4 h-4 border-r border-b border-cyan-neon/30" />
+        <div className="absolute -top-2 -left-2 w-4 h-4 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -top-2 -right-2 w-4 h-4 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -bottom-2 -left-2 w-4 h-4 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -bottom-2 -right-2 w-4 h-4 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
 
         {/* Ultra-minimal stat list */}
         <div className="space-y-6">
@@ -84,9 +84,9 @@ const BiometricsPanel = ({ stats }) => {
         })}
       </div>
 
-        {/* Floating label (below stats) */}
+        {/* Floating label (below stats) - WARNING YELLOW */}
         <div className="absolute -bottom-8 left-0">
-          <div className="font-mono text-[9px] text-cyan-neon/30 uppercase tracking-widest">
+          <div className="font-mono text-[9px] uppercase tracking-widest" style={{ color: 'rgba(250, 204, 21, 0.4)' }}>
             biometrics
           </div>
         </div>

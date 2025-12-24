@@ -20,12 +20,9 @@ const PlasmaBioReactor = ({ dailySteps, targetSteps }) => {
   const circumference = 2 * Math.PI * radius * 0.75 // 270° arc
   const strokeDashoffset = circumference - (progress / 100) * circumference
 
-  // Color based on progress
+  // Color - WARNING YELLOW for military OS contrast
   const getProgressColor = () => {
-    if (progress >= 100) return '#00ff00'
-    if (progress >= 75) return '#00e5ff'
-    if (progress >= 50) return '#facc15'
-    return '#a855f7'
+    return '#facc15'
   }
 
   return (
@@ -37,17 +34,17 @@ const PlasmaBioReactor = ({ dailySteps, targetSteps }) => {
     >
       {/* Ultra-thin arc container */}
       <div className="relative w-24 h-24">
-        {/* L-shaped corner brackets */}
-        <div className="absolute -top-1 -left-1 w-3 h-3 border-l border-t border-cyan-neon/30" />
-        <div className="absolute -top-1 -right-1 w-3 h-3 border-r border-t border-cyan-neon/30" />
-        <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l border-b border-cyan-neon/30" />
-        <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r border-b border-cyan-neon/30" />
+        {/* L-shaped corner brackets - WARNING YELLOW */}
+        <div className="absolute -top-1 -left-1 w-3 h-3 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -top-1 -right-1 w-3 h-3 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
         {/* SVG Arc - 270° from top-left */}
         <svg className="w-full h-full" viewBox="0 0 100 100">
-          {/* Background arc */}
+          {/* Background arc - WARNING YELLOW */}
           <path
             d="M 15 85 A 40 40 0 1 1 85 15"
-            stroke="rgba(0, 229, 255, 0.1)"
+            stroke="rgba(250, 204, 21, 0.15)"
             strokeWidth="0.5"
             fill="none"
           />
@@ -80,15 +77,15 @@ const PlasmaBioReactor = ({ dailySteps, targetSteps }) => {
           >
             {(dailySteps / 1000).toFixed(1)}k
           </div>
-          <div className="font-mono text-[9px] text-cyan-neon/40 uppercase tracking-wider mt-0.5">
+          <div className="font-mono text-[9px] uppercase tracking-wider mt-0.5" style={{ color: 'rgba(250, 204, 21, 0.5)' }}>
             steps
           </div>
         </div>
       </div>
 
-      {/* Floating label (below arc) */}
+      {/* Floating label (below arc) - WARNING YELLOW */}
       <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap">
-        <div className="font-mono text-[10px] text-cyan-neon/30 uppercase tracking-widest">
+        <div className="font-mono text-[10px] uppercase tracking-widest" style={{ color: 'rgba(250, 204, 21, 0.4)' }}>
           bio-reactor
         </div>
       </div>

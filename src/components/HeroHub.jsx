@@ -46,11 +46,31 @@ const HeroHub = ({ gridId }) => {
       {/* LAYER 0: Deep Obsidian Background */}
       <div className="absolute inset-0 z-0 bg-obsidian" />
 
-      {/* Global CRT Overlay (scanline + grain noise) */}
+      {/* MASSIVE BACKGROUND NAME - ZZO Style (150px-200px, 0.05 opacity) */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div
+          className="font-display font-black uppercase tracking-tighter"
+          style={{
+            fontSize: '200px',
+            color: hero.appearance.primaryColor,
+            opacity: 0.05,
+            letterSpacing: '-0.05em',
+            lineHeight: 1,
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {hero.name}
+        </div>
+      </div>
+
+      {/* Global CRT Overlay (scanline + LARGE tactical grid) */}
       <div className="crt-overlay" />
 
-      {/* High-tech mesh grid overlay */}
-      <div className="absolute inset-0 z-0 mesh-overlay opacity-30" />
+      {/* HEAVY GRAIN TEXTURE - Rugged tactical monitor */}
+      <div className="grain-overlay" />
+
+      {/* High-tech mesh grid overlay - FULL SCREEN */}
+      <div className="mesh-overlay" />
 
       {/* LAYER 1: The 3D Hero (Center, 60-70% height) */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
