@@ -160,15 +160,6 @@
   }
 }
 
-@keyframes scan {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
 /* Gemini Scanline - Exact implementation from aiv-ex */
 .scanline {
   width: 100%;
