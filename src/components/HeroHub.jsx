@@ -43,15 +43,17 @@ const HeroHub = ({ gridId }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* LAYER 0: AI Server Core Background Image - Deep Hangar */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* LAYER 0: AI Server Core Background Image - Deep Hangar (far behind) */}
+      <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
         <img
           src="/core.png"
           alt=""
-          className="w-full h-full object-cover"
+          className="object-contain"
           style={{
-            filter: 'brightness(0.2) contrast(1.2) blur(8px)',
-            opacity: 1
+            width: '60%',
+            height: '60%',
+            filter: 'brightness(0.15) contrast(1.3) blur(12px)',
+            opacity: 0.4
           }}
         />
       </div>
