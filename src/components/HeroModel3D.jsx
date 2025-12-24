@@ -78,26 +78,26 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
 
   return (
     <group ref={meshRef}>
-      {/* Main silhouette - 70% CYAN-tinted transparent hologram */}
+      {/* Main silhouette - Faded cyan hologram (atmospheric) */}
       <primitive object={createHumanoidGeometry()}>
         <meshStandardMaterial
           color="#00e5ff"
-          metalness={0.95}
-          roughness={0.05}
+          metalness={0.7}
+          roughness={0.3}
           emissive="#00e5ff"
-          emissiveIntensity={0.8}
+          emissiveIntensity={0.4}
           transparent
-          opacity={0.3}
+          opacity={0.25}
         />
       </primitive>
 
-      {/* Bright Cyan Rim Lighting - Sharp glow on edges */}
+      {/* Cyan-Violet Gradient Rim Light - Atmospheric glow */}
       <group ref={outlineRef}>
         <primitive object={createHumanoidGeometry()}>
           <meshBasicMaterial
-            color="#00e5ff"
+            color="#8855f7"
             transparent
-            opacity={0.9}
+            opacity={0.5}
             side={THREE.BackSide}
           />
         </primitive>
@@ -271,8 +271,8 @@ function Scene({ hero }) {
         autoRotateSpeed={0.5}
       />
 
-      {/* Volumetric fog effect */}
-      <fog attach="fog" args={['#050505', 3, 8]} />
+      {/* Atmospheric fog effect - Holographic depth */}
+      <fog attach="fog" args={['#050505', 5, 15]} />
     </>
   )
 }
@@ -325,6 +325,29 @@ const HeroModel3D = ({ hero }) => {
 
   return (
     <div className="absolute inset-0 z-10">
+      {/* SVG Filter - Digital Grain Noise */}
+      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+        <defs>
+          <filter id="digitalGrain">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.8"
+              numOctaves="3"
+              result="noise"
+            />
+            <feColorMatrix
+              in="noise"
+              type="matrix"
+              values="0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0 0
+                      0 0 0 0.08 0"
+            />
+            <feBlend in="SourceGraphic" in2="noise" mode="overlay" />
+          </filter>
+        </defs>
+      </svg>
+
       {/* Canvas with transparent background */}
       <Canvas
         gl={{
@@ -337,6 +360,18 @@ const HeroModel3D = ({ hero }) => {
         <Scene hero={hero} />
       </Canvas>
 
+      {/* Digital Grain Filter Overlay - Over character only */}
+      <div
+        className="absolute inset-0 pointer-events-none flex items-center justify-center"
+        style={{
+          filter: 'url(#digitalGrain)',
+          mixBlendMode: 'overlay',
+          opacity: 0.6
+        }}
+      >
+        <div className="w-full max-w-2xl h-[70vh]" />
+      </div>
+
       {/* Internal moving scanlines - Travels UP the hero body */}
       <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <div
@@ -344,9 +379,10 @@ const HeroModel3D = ({ hero }) => {
           className="w-full max-w-2xl"
           style={{
             height: '200vh',
-            background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0, 229, 255, 0.25) 1px, transparent 2px, transparent 6px)',
+            background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0, 229, 255, 0.15) 1px, transparent 2px, transparent 6px)',
             mixBlendMode: 'screen',
-            willChange: 'transform'
+            willChange: 'transform',
+            opacity: 0.6
           }}
         />
       </div>

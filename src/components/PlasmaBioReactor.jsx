@@ -34,11 +34,11 @@ const PlasmaBioReactor = ({ dailySteps, targetSteps }) => {
     >
       {/* Ultra-thin arc container */}
       <div className="relative w-24 h-24">
-        {/* L-shaped corner brackets - WARNING YELLOW */}
-        <div className="absolute -top-1 -left-1 w-3 h-3 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
-        <div className="absolute -top-1 -right-1 w-3 h-3 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
-        <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
-        <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.4)' }} />
+        {/* L-shaped corner brackets - WARNING YELLOW (Faded 0.2 opacity) */}
+        <div className="absolute -top-1 -left-1 w-3 h-3 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
+        <div className="absolute -top-1 -right-1 w-3 h-3 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
+        <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
+        <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
         {/* SVG Arc - 270° from top-left */}
         <svg className="w-full h-full" viewBox="0 0 100 100">
           {/* Background arc - WARNING YELLOW */}

@@ -194,26 +194,22 @@
   z-index: 9999;
 }
 
-/* Heavy Scanline Effect - Visible tactical lines */
+/* Animated Scanline - 2px green line moving top to bottom (4s) */
 .crt-overlay::before {
   content: '';
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
   width: 100vw;
-  height: 100vh;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.3) 0px,
-    transparent 1px,
-    transparent 3px
-  );
-  opacity: 0.8;
+  height: 2px;
+  background: rgba(0, 255, 0, 0.02);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.03);
+  animation: scanline-move 4s linear infinite;
+  z-index: 10000;
 }
 
-/* LARGE TACTICAL GRID - 16px hexagonal/square pattern (VISIBLE) */
+/* MICRO-MESH - 4px grid with very low opacity (0.03) */
 .crt-overlay::after {
   content: '';
   position: fixed;
@@ -224,10 +220,19 @@
   width: 100vw;
   height: 100vh;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.15) 1px, transparent 1px);
-  background-size: 16px 16px;
+    linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+  background-size: 4px 4px;
   background-position: 0 0;
+}
+
+@keyframes scanline-move {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
 /* Ghost HUD - Ultra-thin transparent panels */
@@ -237,7 +242,7 @@
   backdrop-filter: blur(5px);
 }
 
-/* High-tech mesh grid overlay - FULL SCREEN */
+/* Subtle mesh overlay - Faded atmospheric texture */
 .mesh-overlay {
   position: fixed;
   top: 0;
@@ -247,13 +252,14 @@
   width: 100vw;
   height: 100vh;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
   background-size: 20px 20px;
   pointer-events: none;
+  opacity: 0.5;
 }
 
-/* HEAVY GRAIN TEXTURE - Rugged tactical monitor */
+/* Subtle grain texture - Atmospheric depth */
 .grain-overlay {
   position: fixed;
   top: 0;
@@ -264,7 +270,58 @@
   height: 100vh;
   pointer-events: none;
   z-index: 9998;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='3.5' numOctaves='6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.25;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.08;
   mix-blend-mode: overlay;
+}
+
+/* Ambient Orbs - Atmospheric glow (violet top-left, blue bottom-right) */
+.ambient-orb-violet {
+  position: fixed;
+  top: -150px;
+  left: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+  filter: blur(150px);
+  opacity: 0.1;
+  animation: pulse-violet 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ambient-orb-blue {
+  position: fixed;
+  bottom: -150px;
+  right: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.15) 0%, transparent 70%);
+  filter: blur(150px);
+  opacity: 0.1;
+  animation: pulse-blue 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes pulse-violet {
+  0%, 100% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes pulse-blue {
+  0%, 100% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(1.05);
+  }
 }

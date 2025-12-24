@@ -46,6 +46,10 @@ const HeroHub = ({ gridId }) => {
       {/* LAYER 0: Deep Obsidian Background */}
       <div className="absolute inset-0 z-0 bg-obsidian" />
 
+      {/* Ambient Orbs - Atmospheric Glow (removes dead black) */}
+      <div className="ambient-orb-violet" />
+      <div className="ambient-orb-blue" />
+
       {/* MASSIVE BACKGROUND NAME - ZZO Style (150px-200px, 0.05 opacity) */}
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div
@@ -53,7 +57,7 @@ const HeroHub = ({ gridId }) => {
           style={{
             fontSize: '200px',
             color: hero.appearance.primaryColor,
-            opacity: 0.05,
+            opacity: 0.03,
             letterSpacing: '-0.05em',
             lineHeight: 1,
             whiteSpace: 'nowrap'
@@ -80,7 +84,7 @@ const HeroHub = ({ gridId }) => {
             <HeroModel3D hero={hero} />
           </Suspense>
 
-          {/* Hero name display - Ghost HUD Style (above 3D model) */}
+          {/* Hero name display - Orbitron headers (above 3D model) */}
           <motion.div
             className="absolute top-8 left-1/2 -translate-x-1/2 z-20"
             key={hero.id}
@@ -90,14 +94,15 @@ const HeroHub = ({ gridId }) => {
             transition={{ duration: 0.5 }}
           >
             <div className="text-center">
-              <div className="font-mono text-xs text-cyan-neon/30 uppercase tracking-widest mb-1">
+              <div className="font-mono text-xs uppercase tracking-widest mb-1" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
                 {hero.codename}
               </div>
               <div
-                className="font-mono text-4xl font-black uppercase tracking-tight"
+                className="font-tactical text-4xl font-black uppercase tracking-tight"
                 style={{
                   color: hero.appearance.primaryColor,
-                  textShadow: `0 0 20px ${hero.appearance.glowColor}`
+                  textShadow: `0 0 12px ${hero.appearance.glowColor}`,
+                  opacity: 0.8
                 }}
               >
                 {hero.name}
@@ -125,7 +130,7 @@ const HeroHub = ({ gridId }) => {
         onHeroChange={setSelectedHeroId}
       />
 
-      {/* Top-Right: GRID_ID - Ghost HUD Style */}
+      {/* Top-Right: GRID_ID - Orbitron header */}
       <motion.div
         className="fixed top-8 right-8 z-30"
         initial={{ opacity: 0, x: 30 }}
@@ -133,14 +138,15 @@ const HeroHub = ({ gridId }) => {
         transition={{ delay: 0.6, duration: 0.6 }}
       >
         <div className="text-right">
-          <div className="font-mono text-xs text-cyan-neon/30 uppercase tracking-widest mb-1">
+          <div className="font-mono text-xs uppercase tracking-widest mb-1" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
             neural link
           </div>
           <div
-            className="font-mono text-2xl font-bold tracking-tight"
+            className="font-tactical text-2xl font-bold tracking-tight"
             style={{
               color: '#00e5ff',
-              textShadow: '0 0 8px #00e5ff'
+              textShadow: '0 0 8px #00e5ff',
+              opacity: 0.7
             }}
           >
             {gridId}
@@ -148,42 +154,42 @@ const HeroHub = ({ gridId }) => {
         </div>
       </motion.div>
 
-      {/* Corner brackets + Tactical Metadata - AAA Density */}
+      {/* Corner brackets + Tactical Metadata - Reduced opacity 0.2 */}
 
       {/* Top-Left Corner */}
       <div className="absolute top-6 left-6 pointer-events-none z-40">
-        <div className="w-8 h-8 border-l border-t border-cyan-neon/15" />
-        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mt-1 space-y-0.5">
+        <div className="w-8 h-8 border-l border-t" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
+        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
           <div>SYSTEM_AUTH: OK</div>
-          <div className="text-cyan-neon/20">VER: 2.7.4</div>
+          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>VER: 2.7.4</div>
         </div>
       </div>
 
       {/* Top-Right Corner */}
       <div className="absolute top-6 right-6 pointer-events-none z-40 text-right">
-        <div className="w-8 h-8 border-r border-t border-cyan-neon/15 ml-auto" />
-        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mt-1 space-y-0.5">
+        <div className="w-8 h-8 border-r border-t ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
+        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
           <div>LATENCY: 22ms</div>
-          <div className="text-cyan-neon/20">PKT_LOSS: 0%</div>
+          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PKT_LOSS: 0%</div>
         </div>
       </div>
 
       {/* Bottom-Left Corner */}
       <div className="absolute bottom-6 left-6 pointer-events-none z-40">
-        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mb-1 space-y-0.5">
+        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
           <div>NEURAL_LINK: STABLE</div>
-          <div className="text-cyan-neon/20">SYNC_RATE: 98.7%</div>
+          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>SYNC_RATE: 98.7%</div>
         </div>
-        <div className="w-8 h-8 border-l border-b border-cyan-neon/15" />
+        <div className="w-8 h-8 border-l border-b" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
       </div>
 
       {/* Bottom-Right Corner */}
       <div className="absolute bottom-6 right-6 pointer-events-none z-40 text-right">
-        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mb-1 space-y-0.5">
+        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
           <div>CORE_TEMP: NOMINAL</div>
-          <div className="text-cyan-neon/20">PWR_DRAW: 47W</div>
+          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PWR_DRAW: 47W</div>
         </div>
-        <div className="w-8 h-8 border-r border-b border-cyan-neon/15 ml-auto" />
+        <div className="w-8 h-8 border-r border-b ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
       </div>
     </motion.div>
   )
