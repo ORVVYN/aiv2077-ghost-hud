@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
@@ -290,76 +290,12 @@ function Scene({ hero }) {
 }
 
 /**
- * MovingScanlines - Internal scanlines that move UP the hero body
- */
-function MovingScanlines() {
-  const scanlineRef = useRef()
-
-  useFrame((state) => {
-    if (scanlineRef.current) {
-      // Move scanlines upward continuously
-      const time = state.clock.getElapsedTime()
-      scanlineRef.current.style.transform = `translateY(${-(time * 20) % 100}%)`
-    }
-  })
-
-  return null // CSS-based, so no JSX return needed for Three.js
-}
-
-/**
  * HeroModel3D Component
  * Renders the 3D hero in a volumetric chamber
  */
 const HeroModel3D = ({ hero }) => {
-  const scanlineRef = useRef()
-
-  useEffect(() => {
-    // Animate scanlines moving upward
-    let animationId
-    let position = 0
-
-    const animate = () => {
-      position = (position + 0.5) % 100
-      if (scanlineRef.current) {
-        scanlineRef.current.style.transform = `translateY(-${position}%)`
-      }
-      animationId = requestAnimationFrame(animate)
-    }
-
-    animationId = requestAnimationFrame(animate)
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId)
-      }
-    }
-  }, [])
-
   return (
     <div className="absolute inset-0 z-10">
-      {/* SVG Filter - Digital Grain Noise */}
-      <svg style={{ position: 'absolute', width: 0, height: 0 }}>
-        <defs>
-          <filter id="digitalGrain">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="3"
-              result="noise"
-            />
-            <feColorMatrix
-              in="noise"
-              type="matrix"
-              values="0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0 0
-                      0 0 0 0.08 0"
-            />
-            <feBlend in="SourceGraphic" in2="noise" mode="overlay" />
-          </filter>
-        </defs>
-      </svg>
-
       {/* Canvas with transparent background */}
       <Canvas
         gl={{
@@ -372,32 +308,6 @@ const HeroModel3D = ({ hero }) => {
         <Scene hero={hero} />
       </Canvas>
 
-      {/* Digital Grain Filter Overlay - Over character only */}
-      <div
-        className="absolute inset-0 pointer-events-none flex items-center justify-center"
-        style={{
-          filter: 'url(#digitalGrain)',
-          mixBlendMode: 'overlay',
-          opacity: 0.6
-        }}
-      >
-        <div className="w-full max-w-2xl h-[70vh]" />
-      </div>
-
-      {/* Internal moving scanlines - Travels UP the hero body */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <div
-          ref={scanlineRef}
-          className="w-full max-w-2xl"
-          style={{
-            height: '200vh',
-            background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0, 229, 255, 0.15) 1px, transparent 2px, transparent 6px)',
-            mixBlendMode: 'screen',
-            willChange: 'transform',
-            opacity: 0.6
-          }}
-        />
-      </div>
     </div>
   )
 }
