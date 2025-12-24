@@ -78,26 +78,26 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
 
   return (
     <group ref={meshRef}>
-      {/* Main silhouette with holographic shader */}
+      {/* Main silhouette - 70% transparent hologram */}
       <primitive object={createHumanoidGeometry()}>
         <meshStandardMaterial
           color={color}
           metalness={0.9}
           roughness={0.1}
           emissive={glowColor}
-          emissiveIntensity={0.5}
+          emissiveIntensity={0.6}
           transparent
-          opacity={0.8}
+          opacity={0.3}
         />
       </primitive>
 
-      {/* Fresnel/Rim-light outline effect (cyan edges) */}
+      {/* Fresnel/Rim-light outline - Sharp Cyan glow on edges */}
       <group ref={outlineRef}>
         <primitive object={createHumanoidGeometry()}>
           <meshBasicMaterial
             color={rimColor}
             transparent
-            opacity={0.6}
+            opacity={0.8}
             side={THREE.BackSide}
           />
         </primitive>
@@ -229,10 +229,51 @@ function Scene({ hero }) {
 }
 
 /**
+ * MovingScanlines - Internal scanlines that move UP the hero body
+ */
+function MovingScanlines() {
+  const scanlineRef = useRef()
+
+  useFrame((state) => {
+    if (scanlineRef.current) {
+      // Move scanlines upward continuously
+      const time = state.clock.getElapsedTime()
+      scanlineRef.current.style.transform = `translateY(${-(time * 20) % 100}%)`
+    }
+  })
+
+  return null // CSS-based, so no JSX return needed for Three.js
+}
+
+/**
  * HeroModel3D Component
  * Renders the 3D hero in a volumetric chamber
  */
 const HeroModel3D = ({ hero }) => {
+  const scanlineRef = useRef()
+
+  useEffect(() => {
+    // Animate scanlines moving upward
+    let animationId
+    let position = 0
+
+    const animate = () => {
+      position = (position + 0.5) % 100
+      if (scanlineRef.current) {
+        scanlineRef.current.style.transform = `translateY(-${position}%)`
+      }
+      animationId = requestAnimationFrame(animate)
+    }
+
+    animationId = requestAnimationFrame(animate)
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId)
+      }
+    }
+  }, [])
+
   return (
     <div className="absolute inset-0 z-10">
       {/* Canvas with transparent background */}
@@ -247,13 +288,16 @@ const HeroModel3D = ({ hero }) => {
         <Scene hero={hero} />
       </Canvas>
 
-      {/* Holographic scanline overlay - Only on character */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+      {/* Internal moving scanlines - Travels UP the hero body */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
         <div
-          className="w-full max-w-2xl h-[70vh]"
+          ref={scanlineRef}
+          className="w-full max-w-2xl"
           style={{
-            background: 'repeating-linear-gradient(0deg, rgba(0, 229, 255, 0.15) 0px, transparent 1px, transparent 3px)',
-            mixBlendMode: 'screen'
+            height: '200vh',
+            background: 'repeating-linear-gradient(0deg, transparent 0px, rgba(0, 229, 255, 0.25) 1px, transparent 2px, transparent 6px)',
+            mixBlendMode: 'screen',
+            willChange: 'transform'
           }}
         />
       </div>

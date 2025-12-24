@@ -52,69 +52,31 @@ const HeroGallery = ({ heroes, selectedHeroId, onHeroChange }) => {
               whileHover={!isLocked ? { scale: 1.15 } : {}}
               whileTap={!isLocked ? { scale: 0.85 } : {}}
             >
-              {/* Diamond/Square Data Node */}
+              {/* Diamond/Square Data Node - Inner Border */}
               <div
                 className="w-full h-full rotate-45"
                 style={{
-                  backgroundColor: isSelected ? hero.appearance.glowColor : 'transparent',
+                  backgroundColor: isSelected ? `${hero.appearance.glowColor}20` : 'transparent',
                   border: `1px solid ${hero.appearance.primaryColor}`,
-                  boxShadow: isSelected ? `0 0 16px ${hero.appearance.glowColor}` : `0 0 4px ${hero.appearance.primaryColor}40`,
+                  boxShadow: isSelected
+                    ? `0 0 12px ${hero.appearance.glowColor}, 0 0 24px ${hero.appearance.glowColor}40, inset 0 0 8px ${hero.appearance.glowColor}30`
+                    : `0 0 4px ${hero.appearance.primaryColor}40`,
                   opacity: isLocked ? 0.3 : 1
                 }}
               />
 
-              {/* Glitch Pulse Effect (active only) */}
+              {/* Double-Border Effect (active only) - Outer Border */}
               {isSelected && !isLocked && (
-                <motion.div
+                <div
                   className="absolute inset-0 rotate-45"
                   style={{
                     border: `1px solid ${hero.appearance.glowColor}`,
-                    boxShadow: `0 0 20px ${hero.appearance.glowColor}`
-                  }}
-                  animate={{
-                    scale: [1, 1.6, 1],
-                    opacity: [0.8, 0, 0.8]
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: 'easeOut'
+                    transform: 'scale(1.4)',
+                    boxShadow: `0 0 8px ${hero.appearance.glowColor}`
                   }}
                 />
               )}
 
-              {/* Glitch artifact lines */}
-              {isSelected && !isLocked && (
-                <>
-                  <motion.div
-                    className="absolute top-0 left-0 w-full h-px"
-                    style={{ backgroundColor: hero.appearance.glowColor }}
-                    animate={{
-                      x: [-10, 10, -10],
-                      opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'linear'
-                    }}
-                  />
-                  <motion.div
-                    className="absolute bottom-0 left-0 w-full h-px"
-                    style={{ backgroundColor: hero.appearance.glowColor }}
-                    animate={{
-                      x: [10, -10, 10],
-                      opacity: [0, 1, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'linear',
-                      delay: 0.5
-                    }}
-                  />
-                </>
-              )}
 
               {/* Lock indicator */}
               {isLocked && (

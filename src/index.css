@@ -203,18 +203,19 @@
   opacity: 0.6;
 }
 
-/* Dot Matrix Overlay - Physical CRT/Military Display Texture */
+/* Dot Matrix Overlay - Gemini-style 1px × 1px pattern */
 .crt-overlay::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
     circle,
-    rgba(0, 229, 255, 0.08) 0.5px,
+    rgba(0, 229, 255, 1) 0.5px,
     transparent 0.5px
   );
   background-size: 4px 4px;
-  opacity: 0.5;
+  background-position: 0 0;
+  opacity: 0.15;
 }
 
 /* Ghost HUD - Ultra-thin transparent panels */

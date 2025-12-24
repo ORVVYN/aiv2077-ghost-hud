@@ -128,36 +128,40 @@ const HeroHub = ({ gridId }) => {
         </div>
       </motion.div>
 
-      {/* Corner brackets + Tactical Metadata */}
+      {/* Corner brackets + Tactical Metadata - AAA Density */}
 
       {/* Top-Left Corner */}
       <div className="absolute top-6 left-6 pointer-events-none z-40">
         <div className="w-8 h-8 border-l border-t border-cyan-neon/15" />
-        <div className="font-mono text-[8px] text-cyan-neon/20 uppercase tracking-widest mt-1">
-          AX-09-SYNC
+        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mt-1 space-y-0.5">
+          <div>SYSTEM_AUTH: OK</div>
+          <div className="text-cyan-neon/20">VER: 2.7.4</div>
         </div>
       </div>
 
       {/* Top-Right Corner */}
       <div className="absolute top-6 right-6 pointer-events-none z-40 text-right">
         <div className="w-8 h-8 border-r border-t border-cyan-neon/15 ml-auto" />
-        <div className="font-mono text-[8px] text-cyan-neon/20 uppercase tracking-widest mt-1">
-          LAT:+40.7128
+        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mt-1 space-y-0.5">
+          <div>LATENCY: 22ms</div>
+          <div className="text-cyan-neon/20">PKT_LOSS: 0%</div>
         </div>
       </div>
 
       {/* Bottom-Left Corner */}
       <div className="absolute bottom-6 left-6 pointer-events-none z-40">
-        <div className="font-mono text-[8px] text-cyan-neon/20 uppercase tracking-widest mb-1">
-          LON:-74.0060
+        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mb-1 space-y-0.5">
+          <div>NEURAL_LINK: STABLE</div>
+          <div className="text-cyan-neon/20">SYNC_RATE: 98.7%</div>
         </div>
         <div className="w-8 h-8 border-l border-b border-cyan-neon/15" />
       </div>
 
       {/* Bottom-Right Corner */}
       <div className="absolute bottom-6 right-6 pointer-events-none z-40 text-right">
-        <div className="font-mono text-[8px] text-cyan-neon/20 uppercase tracking-widest mb-1">
-          SYS:NEURAL-V2
+        <div className="font-mono text-[8px] text-cyan-neon/30 uppercase tracking-widest mb-1 space-y-0.5">
+          <div>CORE_TEMP: NOMINAL</div>
+          <div className="text-cyan-neon/20">PWR_DRAW: 47W</div>
         </div>
         <div className="w-8 h-8 border-r border-b border-cyan-neon/15 ml-auto" />
       </div>
