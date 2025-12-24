@@ -78,26 +78,26 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
 
   return (
     <group ref={meshRef}>
-      {/* Main silhouette - Faded cyan hologram (atmospheric) */}
+      {/* Main silhouette - Semi-transparent hologram */}
       <primitive object={createHumanoidGeometry()}>
         <meshStandardMaterial
           color="#00e5ff"
-          metalness={0.7}
-          roughness={0.3}
+          metalness={0.6}
+          roughness={0.4}
           emissive="#00e5ff"
-          emissiveIntensity={0.4}
+          emissiveIntensity={0.3}
           transparent
-          opacity={0.25}
+          opacity={0.35}
         />
       </primitive>
 
-      {/* Cyan-Violet Gradient Rim Light - Atmospheric glow */}
+      {/* Rim Light - Holographic edge glow */}
       <group ref={outlineRef}>
         <primitive object={createHumanoidGeometry()}>
           <meshBasicMaterial
-            color="#8855f7"
+            color="#00e5ff"
             transparent
-            opacity={0.5}
+            opacity={0.4}
             side={THREE.BackSide}
           />
         </primitive>
@@ -248,6 +248,18 @@ function Scene({ hero }) {
         color={hero.appearance.primaryColor}
       />
 
+      {/* Atmospheric Point Lights - Violet (left) and Blue (right) */}
+      <pointLight
+        position={[-4, 2, 2]}
+        intensity={0.3}
+        color="#8b5cf6"
+      />
+      <pointLight
+        position={[4, 2, 2]}
+        intensity={0.3}
+        color="#3b82f6"
+      />
+
       {/* Holographic platform under hero */}
       <HolographicPlatform color={hero.appearance.glowColor} />
 
@@ -271,7 +283,7 @@ function Scene({ hero }) {
         autoRotateSpeed={0.5}
       />
 
-      {/* Atmospheric fog effect - Holographic depth */}
+      {/* Atmospheric Fog Effect - Deep Hangar Depth */}
       <fog attach="fog" args={['#050505', 5, 15]} />
     </>
   )

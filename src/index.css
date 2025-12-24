@@ -194,7 +194,7 @@
   z-index: 9999;
 }
 
-/* Animated Scanline - 2px green line moving top to bottom (4s) */
+/* Moving Scanline - 2px white horizontal line (6s animation) */
 .crt-overlay::before {
   content: '';
   position: fixed;
@@ -203,13 +203,12 @@
   right: 0;
   width: 100vw;
   height: 2px;
-  background: rgba(0, 255, 0, 0.02);
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.03);
-  animation: scanline-move 4s linear infinite;
+  background: rgba(255, 255, 255, 0.02);
+  animation: scanline-move 6s linear infinite;
   z-index: 10000;
 }
 
-/* MICRO-MESH - 4px grid with very low opacity (0.03) */
+/* GHOST GRID - 40px violet grid (0.03 opacity) */
 .crt-overlay::after {
   content: '';
   position: fixed;
@@ -220,18 +219,18 @@
   width: 100vw;
   height: 100vh;
   background-image:
-    linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-  background-size: 4px 4px;
+    linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   background-position: 0 0;
 }
 
 @keyframes scanline-move {
   0% {
-    transform: translateY(0);
+    top: 0;
   }
   100% {
-    transform: translateY(100vh);
+    top: 100%;
   }
 }
 

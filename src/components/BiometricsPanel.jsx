@@ -19,12 +19,8 @@ const BiometricsPanel = ({ stats }) => {
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.7, duration: 0.6 }}
     >
-      {/* L-shaped corner brackets frame - Faded (0.2 opacity) */}
-      <div className="relative">
-        <div className="absolute -top-2 -left-2 w-4 h-4 border-l border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
-        <div className="absolute -top-2 -right-2 w-4 h-4 border-r border-t" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
-        <div className="absolute -bottom-2 -left-2 w-4 h-4 border-l border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
-        <div className="absolute -bottom-2 -right-2 w-4 h-4 border-r border-b" style={{ borderColor: 'rgba(250, 204, 21, 0.2)' }} />
+      {/* Floating panel with soft backdrop blur */}
+      <div className="relative px-4 py-3 rounded" style={{ backdropFilter: 'blur(10px)', background: 'rgba(0, 0, 0, 0.1)' }}>
 
         {/* Ultra-minimal stat list */}
         <div className="space-y-6">

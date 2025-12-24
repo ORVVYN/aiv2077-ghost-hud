@@ -43,28 +43,17 @@ const HeroHub = ({ gridId }) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* LAYER 0: Deep Obsidian Background */}
-      <div className="absolute inset-0 z-0 bg-obsidian" />
-
-      {/* Ambient Orbs - Atmospheric Glow (removes dead black) */}
-      <div className="ambient-orb-violet" />
-      <div className="ambient-orb-blue" />
-
-      {/* MASSIVE BACKGROUND NAME - ZZO Style (150px-200px, 0.05 opacity) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <div
-          className="font-display font-black uppercase tracking-tighter"
+      {/* LAYER 0: AI Server Core Background Image - Deep Hangar */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <img
+          src="/core.png"
+          alt=""
+          className="w-full h-full object-cover"
           style={{
-            fontSize: '200px',
-            color: hero.appearance.primaryColor,
-            opacity: 0.03,
-            letterSpacing: '-0.05em',
-            lineHeight: 1,
-            whiteSpace: 'nowrap'
+            filter: 'brightness(0.2) contrast(1.2) blur(8px)',
+            opacity: 1
           }}
-        >
-          {hero.name}
-        </div>
+        />
       </div>
 
       {/* Global CRT Overlay (scanline + LARGE tactical grid) */}
@@ -154,12 +143,11 @@ const HeroHub = ({ gridId }) => {
         </div>
       </motion.div>
 
-      {/* Corner brackets + Tactical Metadata - Reduced opacity 0.2 */}
+      {/* Minimalist Corner Metadata - No heavy borders */}
 
       {/* Top-Left Corner */}
       <div className="absolute top-6 left-6 pointer-events-none z-40">
-        <div className="w-8 h-8 border-l border-t" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
-        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
+        <div className="font-mono text-[8px] uppercase tracking-widest space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
           <div>SYSTEM_AUTH: OK</div>
           <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>VER: 2.7.4</div>
         </div>
@@ -167,8 +155,7 @@ const HeroHub = ({ gridId }) => {
 
       {/* Top-Right Corner */}
       <div className="absolute top-6 right-6 pointer-events-none z-40 text-right">
-        <div className="w-8 h-8 border-r border-t ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
-        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
+        <div className="font-mono text-[8px] uppercase tracking-widest space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
           <div>LATENCY: 22ms</div>
           <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PKT_LOSS: 0%</div>
         </div>
@@ -176,20 +163,18 @@ const HeroHub = ({ gridId }) => {
 
       {/* Bottom-Left Corner */}
       <div className="absolute bottom-6 left-6 pointer-events-none z-40">
-        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
+        <div className="font-mono text-[8px] uppercase tracking-widest space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
           <div>NEURAL_LINK: STABLE</div>
           <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>SYNC_RATE: 98.7%</div>
         </div>
-        <div className="w-8 h-8 border-l border-b" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
       </div>
 
       {/* Bottom-Right Corner */}
       <div className="absolute bottom-6 right-6 pointer-events-none z-40 text-right">
-        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
+        <div className="font-mono text-[8px] uppercase tracking-widest space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
           <div>CORE_TEMP: NOMINAL</div>
           <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PWR_DRAW: 47W</div>
         </div>
-        <div className="w-8 h-8 border-r border-b ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.2)' }} />
       </div>
     </motion.div>
   )
