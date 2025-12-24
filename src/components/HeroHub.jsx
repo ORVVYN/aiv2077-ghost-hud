@@ -56,14 +56,17 @@ const HeroHub = ({ gridId }) => {
         />
       </div>
 
-      {/* Global CRT Overlay (scanline + LARGE tactical grid) */}
+      {/* Gemini Grid Background - 40px violet grid with 0.2 opacity wrapper */}
+      <div className="grid-bg absolute inset-0 pointer-events-none opacity-20 z-0" />
+
+      {/* Gemini Scanline - Green horizontal line */}
       <div className="crt-overlay" />
 
-      {/* HEAVY GRAIN TEXTURE - Rugged tactical monitor */}
-      <div className="grain-overlay" />
-
-      {/* High-tech mesh grid overlay - FULL SCREEN */}
-      <div className="mesh-overlay" />
+      {/* Cinematic Ambient Lighting - Gemini Style */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-violet-600/10 blur-[140px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[140px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
 
       {/* LAYER 1: The 3D Hero (Center, 60-70% height) */}
       <div className="absolute inset-0 z-10 flex items-center justify-center">
