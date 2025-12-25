@@ -390,8 +390,8 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
               </svg>
 
               {/* Center: Steps / Limit */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center transform rotate-90">
-                <div className="font-mono text-[10px] font-black text-cyan-neon drop-shadow-[0_0_6px_rgba(0,229,255,0.8)]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="font-mono text-[11px] font-black text-cyan-neon drop-shadow-[0_0_6px_rgba(0,229,255,0.8)]">
                   {dailySteps.toLocaleString()}
                 </div>
                 <div className="font-mono text-[6px] text-cyan-dim/40 uppercase tracking-wider">
