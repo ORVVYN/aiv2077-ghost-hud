@@ -144,7 +144,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
             inset 0 1px 0 rgba(255, 255, 255, 0.02),
             0 0 40px rgba(0, 229, 255, 0.08)
           `,
-          minHeight: '70px'
+          minHeight: '60px'
         }}
       >
         {/* Particle Stream - From Bio-Reactor CENTER to AIV Balance */}
@@ -175,7 +175,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
         ))}
 
         {/* Main Content Layout: Left | Center | Right */}
-        <div className="relative grid grid-cols-[auto_1fr_auto] gap-6 items-center px-6 py-3">
+        <div className="relative grid grid-cols-[auto_1fr_auto] gap-3 items-center px-8 py-2">
 
           {/* LEFT: USER IDENTITY PANEL */}
           <div className="flex items-center gap-3">
@@ -279,9 +279,14 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
 
           {/* CENTER: BIO-REACTOR + EXTRACT BUTTON */}
           <div className="flex flex-col items-center justify-center gap-2">
-            {/* Bio-Reactor Label */}
-            <div className="font-mono text-[7px] text-cyan-neon/50 uppercase tracking-widest">
-              Bio-Reactor
+            {/* Bio-Reactor Label + Max Limit */}
+            <div className="text-center">
+              <div className="font-mono text-[7px] text-cyan-neon/50 uppercase tracking-widest">
+                Bio-Reactor
+              </div>
+              <div className="font-mono text-[6px] text-cyan-dim/30 uppercase tracking-wider">
+                max: 10,000 / day
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -301,7 +306,19 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                   fill="none"
                 />
 
-                {/* Progress Circle - Daily Steps */}
+                {/* Total Accumulated Steps (all steps ever collected) */}
+                <motion.circle
+                  cx="35"
+                  cy="35"
+                  r="30"
+                  stroke="rgba(100, 100, 120, 0.4)"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${Math.min(((dailySteps + (totalAIV % dailyGoal)) / dailyGoal) * 100, 100) / 100 * 189} 189`}
+                />
+
+                {/* Pending Extraction (current dailySteps) - Colorful gradient */}
                 <motion.circle
                   cx="35"
                   cy="35"
@@ -389,13 +406,10 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                 </defs>
               </svg>
 
-              {/* Center: Steps / Limit */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
+              {/* Center: Total Steps Accumulated */}
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="font-mono text-[11px] font-black text-cyan-neon drop-shadow-[0_0_6px_rgba(0,229,255,0.8)]">
                   {dailySteps.toLocaleString()}
-                </div>
-                <div className="font-mono text-[6px] text-cyan-dim/40 uppercase tracking-wider">
-                  / 10,000
                 </div>
               </div>
             </motion.div>
@@ -433,8 +447,13 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
               EXTRACT
             </motion.button>
 
-              {/* Status Only */}
+              {/* Pending Extraction Count + Status */}
               <div className="flex flex-col items-center">
+                {/* Pending extraction count */}
+                <div className="font-mono text-[7px] text-warning-yellow/70 uppercase tracking-wider mb-0.5 font-bold drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]">
+                  {dailySteps.toLocaleString()} ready
+                </div>
+                {/* Status */}
                 <div className="font-mono text-[6px] text-cyan-dim/30 uppercase tracking-wider">
                   {extractStatus}
                 </div>
@@ -443,7 +462,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           </div>
 
           {/* RIGHT: AIV RESERVE & CREDITS (THE MONEY) */}
-          <div className="flex flex-col items-end gap-1.5">
+          <div className="flex flex-col items-end gap-1">
             {/* AIV Balance - Large Warning Yellow */}
             <motion.div animate={balanceControls}>
               <div className="font-mono text-[6px] text-cyan-dim uppercase tracking-widest opacity-60 text-right">
@@ -459,7 +478,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
               <div className="font-mono text-[6px] text-cyan-dim uppercase tracking-widest opacity-60">
                 Credits
               </div>
-              <div className="font-display text-sm font-black text-warning-yellow tracking-tight">
+              <div className="font-display text-xs font-black text-warning-yellow tracking-tight">
                 {credits.toLocaleString()} CR
               </div>
             </div>

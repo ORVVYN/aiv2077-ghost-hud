@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Zap, Package } from 'lucide-react'
+import { ShoppingCart, Zap, Package, Swords, Trophy } from 'lucide-react'
 import { heroes as allHeroes, getHeroById } from '../data/heroes'
 import HeroModel3D from './HeroModel3D'
 import CommandHeader from './CommandHeader'
@@ -9,6 +9,11 @@ import HeroGallery from './HeroGallery'
 import NeuralMarket from './NeuralMarket'
 import TrainingDojo from './TrainingDojo'
 import Inventory from './Inventory'
+import ArenaLobby from './ArenaLobby'
+import VersusScreen from './VersusScreen'
+import BattleInterface from './BattleInterface'
+import RewardsScreen from './RewardsScreen'
+import GlobalLadder from './GlobalLadder'
 import telegram from '../utils/telegram'
 
 /**
@@ -28,9 +33,20 @@ const HeroHub = ({ gridId }) => {
   const [showDojo, setShowDojo] = useState(false)
   const [showInventory, setShowInventory] = useState(false)
 
+  // Phase 4: Arena System State
+  const [showArena, setShowArena] = useState(false)
+  const [arenaStage, setArenaStage] = useState('lobby') // lobby → versus → battle → rewards
+  const [opponent, setOpponent] = useState(null)
+  const [battleResult, setBattleResult] = useState(null)
+  const [battleRewards, setBattleRewards] = useState(null)
+
+  // Phase 5: Global Ladder State
+  const [showLadder, setShowLadder] = useState(false)
+  const [leaguePoints, setLeaguePoints] = useState(2340) // LP for ranking
+
   // ZZO-Style Camera Zoom State (for cinematic transitions)
   const [isCameraZooming, setIsCameraZooming] = useState(false)
-  const anyModalOpen = showMarket || showDojo || showInventory
+  const anyModalOpen = showMarket || showDojo || showInventory || showArena || showLadder
 
   // Update hero when selection changes
   useEffect(() => {
@@ -103,6 +119,62 @@ const HeroHub = ({ gridId }) => {
     telegram.notificationOccurred('success')
   }
 
+  // Arena Handlers
+  const handleMatchFound = (matchData) => {
+    setOpponent(matchData.opponent)
+    setArenaStage('versus')
+  }
+
+  const handleBattleStart = () => {
+    setArenaStage('battle')
+  }
+
+  const handleBattleEnd = (result) => {
+    setBattleResult(result)
+
+    // Generate rewards for victory
+    if (result === 'victory') {
+      const lpGained = Math.floor(Math.random() * 30) + 50 // 50-80 LP per victory
+
+      const rewards = [
+        { type: 'xp', amount: 150 },
+        { type: 'aiv', amount: 8000 },
+        { type: 'lp', amount: lpGained },
+        { type: 'item', name: 'Neural Booster', rarity: 'rare' }
+      ]
+      setBattleRewards(rewards)
+
+      // Apply rewards
+      setTotalAIV(prev => prev + 8000)
+      setAvailableSteps(prev => prev + 8000)
+
+      // Update League Points
+      const oldLP = leaguePoints
+      const newLP = oldLP + lpGained
+      setLeaguePoints(newLP)
+
+      // Check for league advancement (trigger haptic success)
+      const oldLeague = newLP >= 5000 ? 'AIVANCED' : newLP >= 4000 ? 'DIAMOND' : newLP >= 3000 ? 'PLASMA' : newLP >= 2000 ? 'GOLD' : newLP >= 1000 ? 'CHROME' : 'BRONZE'
+      const prevLeague = oldLP >= 5000 ? 'AIVANCED' : oldLP >= 4000 ? 'DIAMOND' : oldLP >= 3000 ? 'PLASMA' : oldLP >= 2000 ? 'GOLD' : oldLP >= 1000 ? 'CHROME' : 'BRONZE'
+
+      if (oldLeague !== prevLeague) {
+        setTimeout(() => {
+          telegram.notificationOccurred('success')
+        }, 2000)
+      }
+    }
+
+    setArenaStage('rewards')
+  }
+
+  const handleArenaClose = () => {
+    setShowArena(false)
+    setArenaStage('lobby')
+    setOpponent(null)
+    setBattleResult(null)
+    setBattleRewards(null)
+  }
+
   // Loading fallback for 3D
   const LoadingFallback = () => (
     <div className="absolute inset-0 z-10 flex items-center justify-center">
@@ -153,7 +225,7 @@ const HeroHub = ({ gridId }) => {
           alt=""
           className="w-full h-full object-cover"
           style={{
-            filter: 'brightness(0.7) contrast(1.4) blur(2px)',
+            filter: 'brightness(0.3) contrast(1.4) blur(12px)',
             opacity: 0.8
           }}
         />
@@ -183,6 +255,44 @@ const HeroHub = ({ gridId }) => {
           <Suspense fallback={<LoadingFallback />}>
             <HeroModel3D hero={hero} />
           </Suspense>
+
+          {/* INNER FRAME: Hero Combat Scanner - Cyan Brackets with breathing animation */}
+
+          {/* TOP LEFT - Above hero's head */}
+          <motion.div
+            className="absolute top-16 left-2 w-12 h-12 border-l-2 border-t-2 border-cyan-neon/30 pointer-events-none"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="absolute -top-4 left-0 font-mono text-[7px] text-cyan-neon/50 uppercase tracking-wider whitespace-nowrap">
+              [UNIT_SCAN_ACTIVE]
+            </div>
+          </motion.div>
+
+          {/* TOP RIGHT - Above hero's head */}
+          <motion.div
+            className="absolute top-16 right-2 w-12 h-12 border-r-2 border-t-2 border-cyan-neon/30 pointer-events-none"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+          />
+
+          {/* BOTTOM LEFT - Below hero's platform */}
+          <motion.div
+            className="absolute bottom-2 left-2 w-12 h-12 border-l-2 border-b-2 border-cyan-neon/30 pointer-events-none"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.75 }}
+          />
+
+          {/* BOTTOM RIGHT - Below hero's platform */}
+          <motion.div
+            className="absolute bottom-2 right-2 w-12 h-12 border-r-2 border-b-2 border-cyan-neon/30 pointer-events-none"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 2.25 }}
+          >
+            <div className="absolute -bottom-4 right-0 font-mono text-[7px] text-cyan-neon/50 uppercase tracking-wider whitespace-nowrap">
+              [UNIT_SCAN_ACTIVE]
+            </div>
+          </motion.div>
 
           {/* Hero name display - Orbitron headers (above 3D model) */}
           <motion.div
@@ -240,6 +350,48 @@ const HeroHub = ({ gridId }) => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.8, duration: 0.6, type: 'spring', stiffness: 100 }}
       >
+        {/* Global Ladder Button - Prestige Gold */}
+        <motion.button
+          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+          style={{
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.4)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(255, 215, 0, 0.4)'
+          }}
+          onClick={() => {
+            telegram.impactOccurred('heavy')
+            setShowLadder(true)
+          }}
+          whileHover={{ scale: 1.05, borderColor: 'rgba(255, 215, 0, 1)' }}
+          whileTap={{ scale: 0.95 }}
+          title="Global Ladder"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+        </motion.button>
+
+        {/* Arena Button - Combat Red */}
+        <motion.button
+          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+          style={{
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.4)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(255, 0, 60, 0.4)'
+          }}
+          onClick={() => {
+            telegram.impactOccurred('heavy')
+            setShowArena(true)
+          }}
+          whileHover={{ scale: 1.05, borderColor: 'rgba(255, 0, 60, 1)' }}
+          whileTap={{ scale: 0.95 }}
+          title="Combat Arena"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-critical-red/0 to-critical-red/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Swords className="w-6 h-6 text-critical-red relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+        </motion.button>
+
         {/* Market Button - Tactical Trapezoid */}
         <motion.button
           className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
@@ -329,6 +481,50 @@ const HeroHub = ({ gridId }) => {
             onUnequip={handleUnequip}
             onUse={handleUseConsumable}
             onClose={() => setShowInventory(false)}
+          />
+        )}
+
+        {/* Phase 4: Arena System */}
+        {showArena && arenaStage === 'lobby' && (
+          <ArenaLobby
+            hero={hero}
+            availableAIV={availableSteps}
+            credits={credits}
+            onClose={handleArenaClose}
+            onMatchFound={handleMatchFound}
+          />
+        )}
+
+        {showArena && arenaStage === 'versus' && opponent && (
+          <VersusScreen
+            hero={hero}
+            opponent={opponent}
+            onBattleStart={handleBattleStart}
+          />
+        )}
+
+        {showArena && arenaStage === 'battle' && opponent && (
+          <BattleInterface
+            hero={hero}
+            opponent={opponent}
+            onBattleEnd={handleBattleEnd}
+          />
+        )}
+
+        {showArena && arenaStage === 'rewards' && battleResult && (
+          <RewardsScreen
+            result={battleResult}
+            rewards={battleRewards}
+            onClose={handleArenaClose}
+          />
+        )}
+
+        {/* Phase 5: Global Ladder */}
+        {showLadder && (
+          <GlobalLadder
+            hero={hero}
+            currentLP={leaguePoints}
+            onClose={() => setShowLadder(false)}
           />
         )}
       </AnimatePresence>
