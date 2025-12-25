@@ -1,10 +1,15 @@
 import { useState, useEffect, Suspense } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ShoppingCart, Zap, Package } from 'lucide-react'
 import { heroes as allHeroes, getHeroById } from '../data/heroes'
 import HeroModel3D from './HeroModel3D'
-import PlasmaBioReactor from './PlasmaBioReactor'
+import CommandHeader from './CommandHeader'
 import BiometricsPanel from './BiometricsPanel'
 import HeroGallery from './HeroGallery'
+import NeuralMarket from './NeuralMarket'
+import TrainingDojo from './TrainingDojo'
+import Inventory from './Inventory'
+import telegram from '../utils/telegram'
 
 /**
  * HeroHub - The Command Center (Phase 2)
@@ -14,11 +19,79 @@ const HeroHub = ({ gridId }) => {
   const [selectedHeroId, setSelectedHeroId] = useState('zephyr-01')
   const [hero, setHero] = useState(getHeroById('zephyr-01'))
 
+  // Phase 3: Economy System State
+  const [availableSteps, setAvailableSteps] = useState(15000) // Starting steps
+  const [dailySteps, setDailySteps] = useState(3420) // Daily progress (example)
+  const [totalSteps, setTotalSteps] = useState(156000) // Total kinetic reserve
+  const [credits, setCredits] = useState(2500) // Credits (CR)
+  const [showMarket, setShowMarket] = useState(false)
+  const [showDojo, setShowDojo] = useState(false)
+  const [showInventory, setShowInventory] = useState(false)
+
+  // ZZO-Style Camera Zoom State (for cinematic transitions)
+  const [isCameraZooming, setIsCameraZooming] = useState(false)
+  const anyModalOpen = showMarket || showDojo || showInventory
+
   // Update hero when selection changes
   useEffect(() => {
     const newHero = getHeroById(selectedHeroId)
     setHero(newHero)
   }, [selectedHeroId])
+
+  // Handle market purchase
+  const handlePurchase = (item) => {
+    setAvailableSteps(prev => prev - item.price)
+    item.owned = true
+    telegram.notificationOccurred('success')
+  }
+
+  // Handle training complete
+  const handleTrainingComplete = (result) => {
+    setAvailableSteps(prev => prev - result.stepsBurned)
+
+    // Apply stat gains to current hero
+    hero.stats.str += result.gains.str
+    hero.stats.agi += result.gains.agi
+    hero.stats.int += result.gains.int
+    hero.stats.sta += result.gains.sta
+
+    setShowDojo(false)
+  }
+
+  // Handle item equip
+  const handleEquip = (item) => {
+    // Unequip same slot items first
+    if (item.slot) {
+      allHeroes.forEach(h => {
+        h.items?.forEach(i => {
+          if (i.slot === item.slot && i.equipped) {
+            i.equipped = false
+          }
+        })
+      })
+    }
+    item.equipped = true
+  }
+
+  // Handle item unequip
+  const handleUnequip = (item) => {
+    item.equipped = false
+  }
+
+  // Handle consumable use
+  const handleUseConsumable = (item) => {
+    // Apply temporary stats or instant effect
+    if (item.duration === 0) {
+      // Instant effect (e.g., repair kit)
+      hero.stats.sta = Math.min(100, hero.stats.sta + item.stats.sta)
+    } else {
+      // Temporary buff (would need timer system in real app)
+      console.log(`Applied ${item.name} for ${item.duration} seconds`)
+    }
+
+    // Remove consumable from inventory
+    item.owned = false
+  }
 
   // Loading fallback for 3D
   const LoadingFallback = () => (
@@ -38,25 +111,51 @@ const HeroHub = ({ gridId }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-obsidian overflow-hidden"
+      className="fixed inset-0 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* LAYER 0: AI Server Core Background Image - Deep Hangar (far behind) */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden">
+      {/* ZZO-Style Camera Zoom Overlay */}
+      <AnimatePresence>
+        {anyModalOpen && (
+          <motion.div
+            className="fixed inset-0 z-20 pointer-events-none"
+            initial={{ scale: 1 }}
+            animate={{ scale: 1.15 }}
+            exit={{ scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Glitch overlay during zoom */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-cyan-neon/10 via-transparent to-plasma-purple/10"
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: [0, 0.5, 0], x: ['-100%', '100%'] }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* LAYER 0: AI Server Core Background Image - Revealed Monolith */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <img
           src="/core.png"
           alt=""
-          className="object-contain"
+          className="w-full h-full object-cover"
           style={{
-            width: '60%',
-            height: '60%',
-            filter: 'brightness(0.15) contrast(1.3) blur(12px)',
-            opacity: 0.4
+            filter: 'brightness(0.7) contrast(1.4) blur(2px)',
+            opacity: 0.8
           }}
         />
       </div>
+
+      {/* Cyan Floor Gradient - Creates scale and depth */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none z-0"
+        style={{
+          background: 'radial-gradient(ellipse at bottom, rgba(0, 229, 255, 0.08) 0%, transparent 60%)'
+        }}
+      />
 
       {/* Gemini Grid Background - 40px violet grid with 0.2 opacity wrapper */}
       <div className="grid-bg absolute inset-0 pointer-events-none opacity-20" />
@@ -92,8 +191,8 @@ const HeroHub = ({ gridId }) => {
                 className="font-tactical text-4xl font-black uppercase tracking-tight"
                 style={{
                   color: hero.appearance.primaryColor,
-                  textShadow: `0 0 12px ${hero.appearance.glowColor}`,
-                  opacity: 0.8
+                  textShadow: `0 0 16px ${hero.appearance.glowColor}, 0 0 24px ${hero.appearance.glowColor}`,
+                  opacity: 0.9
                 }}
               >
                 {hero.name}
@@ -105,10 +204,12 @@ const HeroHub = ({ gridId }) => {
 
       {/* LAYER 2: HUD Panels (Pinned to Edges - Never Overlap Hero) */}
 
-      {/* Top-Left: Plasma Bio-Reactor */}
-      <PlasmaBioReactor
-        dailySteps={hero.dailySteps}
-        targetSteps={hero.targetSteps}
+      {/* NEW: Command Header - Unified HUD at top */}
+      <CommandHeader
+        dailySteps={dailySteps}
+        totalSteps={totalSteps}
+        credits={credits}
+        hero={hero}
       />
 
       {/* Left-Edge: Biometrics Panel */}
@@ -121,67 +222,125 @@ const HeroHub = ({ gridId }) => {
         onHeroChange={setSelectedHeroId}
       />
 
-      {/* Top-Right: GRID_ID - Orbitron header */}
+      {/* Phase 3: Tactical Action Dock (Right Edge) - ZZO Style */}
       <motion.div
-        className="fixed top-8 right-8 z-30"
+        className="fixed right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3 pointer-events-auto"
         initial={{ opacity: 0, x: 30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
+        transition={{ delay: 0.8, duration: 0.6, type: 'spring', stiffness: 100 }}
       >
-        <div className="text-right">
-          <div className="font-mono text-xs uppercase tracking-widest mb-1" style={{ color: 'rgba(0, 229, 255, 0.25)' }}>
-            neural link
+        {/* Market Button - Tactical Trapezoid */}
+        <motion.button
+          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+          style={{
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.4)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(0, 229, 255, 0.3)'
+          }}
+          onClick={() => {
+            telegram.impactOccurred('heavy')
+            setShowMarket(true)
+          }}
+          whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
+          whileTap={{ scale: 0.95 }}
+          title="Neural Market"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ShoppingCart className="w-6 h-6 text-cyan-neon relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+        </motion.button>
+
+        {/* Training Dojo Button - Tactical Trapezoid */}
+        <motion.button
+          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+          style={{
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.4)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(250, 204, 21, 0.3)'
+          }}
+          onClick={() => {
+            telegram.impactOccurred('heavy')
+            setShowDojo(true)
+          }}
+          whileHover={{ scale: 1.05, borderColor: 'rgba(250, 204, 21, 1)' }}
+          whileTap={{ scale: 0.95 }}
+          title="Training Dojo"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Zap className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
+        </motion.button>
+
+        {/* Inventory Button - Tactical Trapezoid */}
+        <motion.button
+          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+          style={{
+            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.4)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(168, 85, 247, 0.3)'
+          }}
+          onClick={() => {
+            telegram.impactOccurred('heavy')
+            setShowInventory(true)
+          }}
+          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
+          whileTap={{ scale: 0.95 }}
+          title="Inventory"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Package className="w-6 h-6 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+        </motion.button>
+
+        {/* Steps Counter - Tactical Panel */}
+        <motion.div
+          className="relative px-4 py-3 mt-2 overflow-hidden"
+          style={{
+            clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
+            background: 'rgba(5, 5, 5, 0.5)',
+            backdropFilter: 'blur(30px)',
+            border: '1px solid rgba(0, 229, 255, 0.2)'
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          <div className="font-mono text-[9px] text-cyan-dim uppercase text-center mb-1 tracking-widest">Currency</div>
+          <div className="font-display text-base font-black text-warning-yellow text-center whitespace-nowrap tracking-tight">
+            {availableSteps.toLocaleString()}
           </div>
-          <div
-            className="font-tactical text-2xl font-bold tracking-tight"
-            style={{
-              color: '#00e5ff',
-              textShadow: '0 0 8px #00e5ff',
-              opacity: 0.7
-            }}
-          >
-            {gridId}
-          </div>
-        </div>
+          <div className="font-mono text-[8px] text-cyan-dim/50 uppercase text-center mt-0.5">STEPS</div>
+        </motion.div>
       </motion.div>
 
-      {/* Corner brackets + Tactical Metadata */}
+      {/* Phase 3: Modal Windows */}
+      <AnimatePresence>
+        {showMarket && (
+          <NeuralMarket
+            availableSteps={availableSteps}
+            onPurchase={handlePurchase}
+            onClose={() => setShowMarket(false)}
+          />
+        )}
 
-      {/* Top-Left Corner */}
-      <div className="absolute top-6 left-6 pointer-events-none z-40">
-        <div className="w-8 h-8 border-l border-t" style={{ borderColor: 'rgba(0, 229, 255, 0.3)' }} />
-        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
-          <div>SYSTEM_AUTH: OK</div>
-          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>VER: 2.7.4</div>
-        </div>
-      </div>
+        {showDojo && (
+          <TrainingDojo
+            hero={hero}
+            availableSteps={availableSteps}
+            onTrainingComplete={handleTrainingComplete}
+            onClose={() => setShowDojo(false)}
+          />
+        )}
 
-      {/* Top-Right Corner */}
-      <div className="absolute top-6 right-6 pointer-events-none z-40 text-right">
-        <div className="w-8 h-8 border-r border-t ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.3)' }} />
-        <div className="font-mono text-[8px] uppercase tracking-widest mt-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
-          <div>LATENCY: 22ms</div>
-          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PKT_LOSS: 0%</div>
-        </div>
-      </div>
-
-      {/* Bottom-Left Corner */}
-      <div className="absolute bottom-6 left-6 pointer-events-none z-40">
-        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
-          <div>NEURAL_LINK: STABLE</div>
-          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>SYNC_RATE: 98.7%</div>
-        </div>
-        <div className="w-8 h-8 border-l border-b" style={{ borderColor: 'rgba(0, 229, 255, 0.3)' }} />
-      </div>
-
-      {/* Bottom-Right Corner */}
-      <div className="absolute bottom-6 right-6 pointer-events-none z-40 text-right">
-        <div className="font-mono text-[8px] uppercase tracking-widest mb-1 space-y-0.5" style={{ color: 'rgba(0, 229, 255, 0.3)' }}>
-          <div>CORE_TEMP: NOMINAL</div>
-          <div style={{ color: 'rgba(0, 229, 255, 0.15)' }}>PWR_DRAW: 47W</div>
-        </div>
-        <div className="w-8 h-8 border-r border-b ml-auto" style={{ borderColor: 'rgba(0, 229, 255, 0.3)' }} />
-      </div>
+        {showInventory && (
+          <Inventory
+            onEquip={handleEquip}
+            onUnequip={handleUnequip}
+            onUse={handleUseConsumable}
+            onClose={() => setShowInventory(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }
