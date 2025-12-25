@@ -161,18 +161,20 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
     <motion.div
       className="fixed top-0 left-0 right-0 z-50 pointer-events-auto"
       initial={{ y: -100, opacity: 0 }}
-      animate={headerControls}
+      animate={{ y: 0, opacity: 1, ...headerControls }}
       transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
     >
       {/* Main Header Container - Trapezoid Shape */}
       <div
-        className="relative mx-auto overflow-visible"
+        className="relative mx-auto"
         style={{
           clipPath: 'polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%)',
-          background: 'rgba(5, 5, 5, 0.3)',
+          background: 'rgba(5, 5, 5, 0.6)',
           backdropFilter: 'blur(40px)',
-          border: '1px solid rgba(0, 229, 255, 0.3)',
-          borderTop: 'none'
+          border: '2px solid rgba(0, 229, 255, 0.8)',
+          borderTop: 'none',
+          minHeight: '120px',
+          boxShadow: '0 0 20px rgba(0, 229, 255, 0.5)'
         }}
       >
         {/* Micro-Grid Texture Overlay */}
