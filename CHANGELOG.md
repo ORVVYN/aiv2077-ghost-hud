@@ -266,32 +266,80 @@ None! Phase 1 is fully production-ready.
 
 ---
 
+## [5.0.0] - 2025-12-26 - Phase 4-5 Complete ✅
+
+### 🎉 Arena Combat System & Global Ladder
+
+Complete PvP infrastructure with competitive ranking.
+
+### ✨ Added
+
+#### Phase 4: Arena Combat
+- **ArenaLobby.jsx** - Matchmaking interface with queue system
+- **VersusScreen.jsx** - Pre-battle cinematic with VS animation
+- **BattleInterface.jsx** - Real-time combat with skill system
+- **RewardsScreen.jsx** - Post-battle loot and LP rewards
+- Full arena flow: lobby → versus → battle → rewards
+- League Points (LP) system for ranking
+- Emergency Lockdown mode (red HUD)
+
+#### Phase 5: Global Ladder
+- **GlobalLadder.jsx** - Competitive leaderboard (Top 100)
+- **TierEncyclopedia.jsx** - League tier information
+- 6 competitive leagues (Bronze → AIVANCED)
+- LP progression (0 to 5000+)
+- Tier promotion system with haptic feedback
+- Player profile cards
+
+#### Command Header Refinements
+- Reduced height to 60px (more compact)
+- Added "max: 10,000 / day" limit label
+- Dual-ring progress (total + pending extraction)
+- Enhanced "ready for extraction" counter with glow
+- Tighter spacing for sleeker appearance
+
+#### HeroHub Enhancements
+- Added Arena button (Swords icon, Critical Red)
+- Added Global Ladder button (Trophy icon, Warning Yellow)
+- Hero Combat Scanner brackets with breathing animation
+- [UNIT_SCAN_ACTIVE] metadata labels
+- Dimmed background blur for depth
+
+### 🎨 Visual Effects
+- Scanline reveal on all modals
+- Chromatic aberration on titles
+- Glass blur overlays
+- Victory confetti particles
+- Defeat grayscale desaturation
+
+### ⚡ Performance
+- 60 FPS combat animations
+- Client-side battle simulation
+- Optimized leaderboard rendering
+
+---
+
 ## Future Releases
 
-### [2.0.0] - Phase 2: Hero Hub (Planned)
-- 3D hero rendering with Three.js
-- Daily steps tracker
-- Biometrics HUD
-- Hero gallery swiper
-- Pedometer API integration
+### [6.0.0] - Phase 6: Neural Syndicates (In Progress)
+- Clan system (create/join)
+- Shared Step Reactor
+- Syndicate HQ screen
+- Member management
+- Tactical chat terminal
 
-### [3.0.0] - Phase 3: Economy (Planned)
-- Neural Market
-- Training Dojo
-- Item system
-- Step-burn mechanics
+### [7.0.0] - Phase 7: Grid Invasions (Planned)
+- Tournament brackets
+- Daily/Weekly events
+- Neural Key entry system
+- Sector control map
+- War Room UI
 
-### [4.0.0] - Phase 4: Arena (Planned)
-- Battle simulator
-- Real-time tactical feed
-- Critical hit effects
-- Victory animations
-
-### [5.0.0] - Phase 5: Progression (Planned)
-- Ladder system
-- Division badges (Bronze → AIVANCED)
-- Agent profile cards
-- Leaderboards
+### [8.0.0] - Phase 8: Hall of Fame (Planned)
+- Tournament winners display
+- Golden Ghost holograms
+- Legendary Agent Cards
+- Prestige leaderboard
 
 ---
 
