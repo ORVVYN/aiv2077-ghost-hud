@@ -53,15 +53,26 @@ const HeroGallery = ({ heroes, selectedHeroId, onHeroChange }) => {
               whileTap={!isLocked ? { scale: 0.85 } : {}}
             >
               {/* Diamond/Square Data Node - Inner Border */}
-              <div
+              <motion.div
                 className="w-full h-full rotate-45"
                 style={{
                   backgroundColor: isSelected ? `${hero.appearance.glowColor}20` : 'transparent',
                   border: `1px solid ${hero.appearance.primaryColor}`,
-                  boxShadow: isSelected
-                    ? `0 0 12px ${hero.appearance.glowColor}, 0 0 24px ${hero.appearance.glowColor}40, inset 0 0 8px ${hero.appearance.glowColor}30`
-                    : `0 0 4px ${hero.appearance.primaryColor}40`,
                   opacity: isLocked ? 0.3 : 1
+                }}
+                animate={isSelected && !isLocked ? {
+                  boxShadow: [
+                    `0 0 12px ${hero.appearance.glowColor}, 0 0 24px ${hero.appearance.glowColor}40, inset 0 0 8px ${hero.appearance.glowColor}30`,
+                    `0 0 16px ${hero.appearance.glowColor}, 0 0 32px ${hero.appearance.glowColor}60, inset 0 0 12px ${hero.appearance.glowColor}50`,
+                    `0 0 12px ${hero.appearance.glowColor}, 0 0 24px ${hero.appearance.glowColor}40, inset 0 0 8px ${hero.appearance.glowColor}30`
+                  ]
+                } : {
+                  boxShadow: `0 0 4px ${hero.appearance.primaryColor}40`
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
                 }}
               />
 

@@ -1,15 +1,87 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, useFBX } from '@react-three/drei'
 import * as THREE from 'three'
 
 /**
- * HeroSilhouette - Placeholder 3D character mesh
- * High-poly humanoid silhouette with rim-lighting
+ * HeroModel - FBX 3D character with holographic shader
  */
-function HeroSilhouette({ color, rimColor, glowColor }) {
+function HeroModel({ color, rimColor, glowColor }) {
   const meshRef = useRef()
   const outlineRef = useRef()
+  const fbx = useFBX('/model.fbx')
+  const [clonedModel, setClonedModel] = useState(null)
+  const [clonedOutline, setClonedOutline] = useState(null)
+
+  useEffect(() => {
+    if (fbx) {
+      // Calculate proper scale based on model's actual size
+      const boundingBox = new THREE.Box3().setFromObject(fbx)
+      const size = new THREE.Vector3()
+      boundingBox.getSize(size)
+
+      // Target height: 2 units (comfortable size for camera at distance 4)
+      const targetHeight = 2
+      const scaleFactor = targetHeight / size.y
+
+      // Clone for main model
+      const mainClone = fbx.clone()
+      mainClone.scale.setScalar(scaleFactor)
+
+      // Center the model - calculate bounding box AFTER scaling
+      const scaledBox = new THREE.Box3().setFromObject(mainClone)
+      const center = new THREE.Vector3()
+      scaledBox.getCenter(center)
+
+      // Position model so it's centered horizontally and bottom is at y = 0
+      const yOffset = -scaledBox.min.y
+      mainClone.position.set(-center.x, yOffset, -center.z)
+
+      // Apply holographic material to all meshes
+      mainClone.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshStandardMaterial({
+            color: color,
+            metalness: 0.7,
+            roughness: 0.3,
+            emissive: glowColor,
+            emissiveIntensity: 0.5,
+            transparent: true,
+            opacity: 0.6
+          })
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+
+      // Store base values for animation
+      mainClone.userData.baseY = yOffset
+      mainClone.userData.baseScale = scaleFactor
+
+      setClonedModel(mainClone)
+
+      // Clone for rim light outline
+      const outlineClone = fbx.clone()
+      const outlineScale = scaleFactor * 1.02
+
+      outlineClone.scale.setScalar(outlineScale)
+      outlineClone.position.set(-center.x, yOffset, -center.z)
+
+      outlineClone.traverse((child) => {
+        if (child.isMesh) {
+          child.material = new THREE.MeshBasicMaterial({
+            color: rimColor,
+            transparent: true,
+            opacity: 0.5,
+            side: THREE.BackSide
+          })
+        }
+      })
+
+      outlineClone.userData.baseScale = outlineScale
+      setClonedOutline(outlineClone)
+    }
+  }, [fbx, color, rimColor, glowColor])
 
   // Idle breathing animation
   useFrame((state) => {
@@ -17,92 +89,33 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
 
     // Gentle breathing motion
     if (meshRef.current) {
-      meshRef.current.position.y = Math.sin(time * 0.5) * 0.05
-      meshRef.current.rotation.y = Math.sin(time * 0.2) * 0.02
+      const baseY = meshRef.current.userData.baseY || 0
+      meshRef.current.position.y = baseY + Math.sin(time * 0.5) * 0.02
+      meshRef.current.rotation.y = Math.sin(time * 0.2) * 0.05
     }
 
     // Pulsing outline
-    if (outlineRef.current) {
-      outlineRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.01)
+    if (outlineRef.current && meshRef.current) {
+      const baseScale = outlineRef.current.userData.baseScale || 1
+      const pulseScale = 1 + Math.sin(time * 2) * 0.01
+      const finalScale = baseScale * pulseScale
+
+      outlineRef.current.scale.setScalar(finalScale)
+      outlineRef.current.position.copy(meshRef.current.position)
+      outlineRef.current.rotation.copy(meshRef.current.rotation)
     }
   })
 
-  // Create humanoid silhouette geometry
-  const createHumanoidGeometry = () => {
-    const group = new THREE.Group()
-
-    // Torso (main body)
-    const torsoGeometry = new THREE.CapsuleGeometry(0.4, 0.8, 8, 16)
-    const torso = new THREE.Mesh(torsoGeometry)
-    torso.position.y = 0.5
-    group.add(torso)
-
-    // Head
-    const headGeometry = new THREE.SphereGeometry(0.25, 16, 16)
-    const head = new THREE.Mesh(headGeometry)
-    head.position.y = 1.3
-    group.add(head)
-
-    // Shoulders
-    const shoulderGeometry = new THREE.BoxGeometry(0.9, 0.2, 0.3)
-    const shoulders = new THREE.Mesh(shoulderGeometry)
-    shoulders.position.y = 1.0
-    group.add(shoulders)
-
-    // Arms (left)
-    const armGeometry = new THREE.CapsuleGeometry(0.12, 0.6, 6, 12)
-    const leftArm = new THREE.Mesh(armGeometry)
-    leftArm.position.set(-0.5, 0.6, 0)
-    leftArm.rotation.z = 0.3
-    group.add(leftArm)
-
-    // Arms (right)
-    const rightArm = new THREE.Mesh(armGeometry)
-    rightArm.position.set(0.5, 0.6, 0)
-    rightArm.rotation.z = -0.3
-    group.add(rightArm)
-
-    // Legs (left)
-    const legGeometry = new THREE.CapsuleGeometry(0.15, 0.7, 6, 12)
-    const leftLeg = new THREE.Mesh(legGeometry)
-    leftLeg.position.set(-0.2, -0.3, 0)
-    group.add(leftLeg)
-
-    // Legs (right)
-    const rightLeg = new THREE.Mesh(legGeometry)
-    rightLeg.position.set(0.2, -0.3, 0)
-    group.add(rightLeg)
-
-    return group
-  }
+  if (!clonedModel || !clonedOutline) return null
 
   return (
-    <group ref={meshRef}>
-      {/* Main silhouette - Semi-transparent hologram */}
-      <primitive object={createHumanoidGeometry()}>
-        <meshStandardMaterial
-          color="#00e5ff"
-          metalness={0.6}
-          roughness={0.4}
-          emissive="#00e5ff"
-          emissiveIntensity={0.3}
-          transparent
-          opacity={0.35}
-        />
-      </primitive>
+    <>
+      {/* Main holographic model */}
+      <primitive ref={meshRef} object={clonedModel} />
 
-      {/* Rim Light - Holographic edge glow */}
-      <group ref={outlineRef}>
-        <primitive object={createHumanoidGeometry()}>
-          <meshBasicMaterial
-            color="#00e5ff"
-            transparent
-            opacity={0.4}
-            side={THREE.BackSide}
-          />
-        </primitive>
-      </group>
-    </group>
+      {/* Rim light outline */}
+      <primitive ref={outlineRef} object={clonedOutline} />
+    </>
   )
 }
 
@@ -111,6 +124,7 @@ function HeroSilhouette({ color, rimColor, glowColor }) {
  */
 function DigitalDebris() {
   const debrisRef = useRef()
+  const particleRefs = useRef([])
   const particleCount = 50
 
   // Create particles
@@ -126,20 +140,35 @@ function DigitalDebris() {
         Math.sin(angle) * radius
       ],
       scale: 0.02 + Math.random() * 0.03,
-      speed: 0.2 + Math.random() * 0.3
+      speed: 0.2 + Math.random() * 0.3,
+      flickerOffset: Math.random() * 10 // Random phase offset for flicker
     }
   })
 
   useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+
     if (debrisRef.current) {
-      debrisRef.current.rotation.y = state.clock.getElapsedTime() * 0.1
+      debrisRef.current.rotation.y = time * 0.1
     }
+
+    // Flickering effect - digital sparks
+    particleRefs.current.forEach((ref, i) => {
+      if (ref && particles[i]) {
+        const flicker = Math.sin((time + particles[i].flickerOffset) * 8) * 0.5 + 0.5
+        ref.material.opacity = 0.3 + flicker * 0.5 // Flicker between 0.3 and 0.8
+      }
+    })
   })
 
   return (
     <group ref={debrisRef}>
       {particles.map((particle, i) => (
-        <mesh key={i} position={particle.position}>
+        <mesh
+          key={i}
+          position={particle.position}
+          ref={(el) => (particleRefs.current[i] = el)}
+        >
           <boxGeometry args={[particle.scale, particle.scale, particle.scale]} />
           <meshBasicMaterial
             color="#00e5ff"
@@ -153,15 +182,23 @@ function DigitalDebris() {
 }
 
 /**
- * HolographicPlatform - Glowing ring under hero
+ * HolographicPlatform - Glowing ring under hero with digital ripple
  */
 function HolographicPlatform({ color }) {
   const ringRef = useRef()
+  const rippleRef = useRef()
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
     if (ringRef.current) {
       ringRef.current.rotation.z = time * 0.3
+    }
+
+    // Digital ripple animation - expanding and fading
+    if (rippleRef.current) {
+      const ripplePhase = (time * 0.5) % 1
+      rippleRef.current.scale.setScalar(0.5 + ripplePhase * 1.5)
+      rippleRef.current.material.opacity = (1 - ripplePhase) * 0.5
     }
   })
 
@@ -184,6 +221,17 @@ function HolographicPlatform({ color }) {
           color={color}
           transparent
           opacity={0.4}
+        />
+      </mesh>
+
+      {/* Digital Ripple Effect */}
+      <mesh ref={rippleRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+        <ringGeometry args={[1.15, 1.2, 64]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.5}
+          side={THREE.DoubleSide}
         />
       </mesh>
 
@@ -228,7 +276,7 @@ function Scene({ hero }) {
         position={[-3, 2, -2]}
         angle={0.4}
         penumbra={0.8}
-        intensity={2.0}
+        intensity={3.0}
         color={hero.appearance.rimLightColor}
       />
 
@@ -237,7 +285,7 @@ function Scene({ hero }) {
         position={[3, 2, -2]}
         angle={0.4}
         penumbra={0.8}
-        intensity={1.5}
+        intensity={2.5}
         color={hero.appearance.rimLightColor}
       />
 
@@ -266,8 +314,8 @@ function Scene({ hero }) {
       {/* Digital Debris - Floating voxel particles */}
       <DigitalDebris />
 
-      {/* Hero character */}
-      <HeroSilhouette
+      {/* Hero character - FBX Model */}
+      <HeroModel
         color={hero.appearance.primaryColor}
         rimColor={hero.appearance.rimLightColor}
         glowColor={hero.appearance.glowColor}

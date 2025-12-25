@@ -211,9 +211,9 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
         ))}
 
         {/* Main Content Grid */}
-        <div className="relative grid grid-cols-3 gap-4 px-6 py-4">
+        <div className="relative grid grid-cols-3 gap-4 px-6 py-4" style={{ background: 'rgba(255, 0, 0, 0.1)' }}>
           {/* LEFT SECTION: Bio-Reactor (Daily Steps Ring) + EXTRACT_AIV Button */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" style={{ background: 'rgba(0, 255, 0, 0.1)' }}>
             {/* Daily Steps Ring */}
             <motion.div
               className="relative"
@@ -325,7 +325,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           </div>
 
           {/* CENTER SECTION: Neural Waveform */}
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center" style={{ background: 'rgba(0, 0, 255, 0.1)' }}>
             {/* Neural Status Label */}
             <div className="font-mono text-[9px] text-cyan-neon uppercase tracking-widest mb-2 flex items-center gap-2">
               <Activity className="w-3 h-3" strokeWidth={1.2} fill="none" />
@@ -347,7 +347,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           </div>
 
           {/* RIGHT SECTION: Avatar + AIV Balance + Credits */}
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center justify-end gap-4" style={{ background: 'rgba(255, 255, 0, 0.1)' }}>
             {/* Total Stats */}
             <div className="flex-1 min-w-0 text-right">
               {/* AIV Balance (Kinetic Reserve renamed to AIV) */}

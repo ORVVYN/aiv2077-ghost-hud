@@ -32,7 +32,7 @@ function App() {
   };
 
   return (
-    <div className="w-full h-full bg-obsidian">
+    <div className="w-full h-full">
       {phase === 'splash' && (
         <SplashScreen onComplete={handleSplashComplete} />
       )}

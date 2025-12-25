@@ -70,7 +70,7 @@ const NeuralSyncScreen = ({ onComplete }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 z-40 flex flex-col bg-obsidian overflow-hidden"
+      className="fixed inset-0 z-40 flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
