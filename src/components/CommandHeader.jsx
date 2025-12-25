@@ -1,20 +1,29 @@
-import { useRef, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Activity } from 'lucide-react'
+import { useRef, useEffect, useState } from 'react'
+import { motion, useAnimation } from 'framer-motion'
+import { Activity, Zap } from 'lucide-react'
+import telegram from '../utils/telegram'
 
 /**
- * CommandHeader - Unified Command Tower HUD
+ * CommandHeader - Unified Command Tower HUD with AIV_EXTRACTION mechanic
  * Full-width tactical header with symmetrical layout:
- * - Left: Bio-Reactor (Daily Steps Ring)
+ * - Left: Bio-Reactor (Daily Steps Ring) + EXTRACT_AIV button
  * - Center: Neural Waveform
- * - Right: Avatar + Total Steps + Credits
+ * - Right: Avatar + AIV Balance + Credits
  */
-const CommandHeader = ({ dailySteps, totalSteps, credits, hero }) => {
+const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) => {
   const canvasRef = useRef(null)
+  const [isExtracting, setIsExtracting] = useState(false)
+  const [extractStatus, setExtractStatus] = useState('STANDBY')
+  const [particles, setParticles] = useState([])
+
+  const reactorControls = useAnimation()
+  const balanceControls = useAnimation()
+  const headerControls = useAnimation()
 
   // Daily steps progress (max 10,000 steps per day)
   const dailyGoal = 10000
   const dailyProgress = Math.min((dailySteps / dailyGoal) * 100, 100)
+  const hasStepsToExtract = dailySteps > 0
 
   // Neural Waveform Animation
   useEffect(() => {
@@ -78,16 +87,86 @@ const CommandHeader = ({ dailySteps, totalSteps, credits, hero }) => {
     }
   }, [])
 
+  // Handle AIV Extraction with 60fps animation sequence
+  const handleExtractAIV = async () => {
+    if (!hasStepsToExtract || isExtracting) return
+
+    setIsExtracting(true)
+    setExtractStatus('NEURAL_SYNCING...')
+
+    // STAGE 1: IGNITION - Plasma Flare with high-speed rotation
+    await reactorControls.start({
+      rotate: [0, 360, 720],
+      scale: [1, 1.15, 1],
+      filter: [
+        'drop-shadow(0 0 10px rgba(0, 229, 255, 0.5))',
+        'drop-shadow(0 0 30px rgba(0, 229, 255, 1))',
+        'drop-shadow(0 0 10px rgba(0, 229, 255, 0.5))'
+      ],
+      transition: { duration: 0.6, ease: 'easeOut' }
+    })
+
+    // STAGE 2: TRANSFER - Generate particle stream
+    const particleCount = 20
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+      id: Date.now() + i,
+      delay: i * 0.03
+    }))
+    setParticles(newParticles)
+
+    // Wait for particles to travel
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    // STAGE 3: IMPACT - Balance update with spring + screen shake + chromatic aberration
+    telegram.impactOccurred('heavy')
+
+    // Chromatic aberration + screen shake
+    headerControls.start({
+      x: [0, -2, 2, -1, 1, 0],
+      filter: [
+        'none',
+        'drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 cyan)',
+        'drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 cyan)',
+        'none'
+      ],
+      transition: { duration: 0.3 }
+    })
+
+    // Spring animation on balance
+    await balanceControls.start({
+      scale: [1, 1.3, 0.95, 1.05, 1],
+      color: ['#fbbf24', '#00e5ff', '#fbbf24'],
+      transition: {
+        scale: { type: 'spring', stiffness: 300, damping: 10 },
+        duration: 0.5
+      }
+    })
+
+    setExtractStatus('TRANSACTION_COMPLETE')
+
+    // Call parent handler to update AIV balance
+    if (onExtractAIV) {
+      onExtractAIV(dailySteps)
+    }
+
+    // Clear particles and reset
+    setTimeout(() => {
+      setParticles([])
+      setIsExtracting(false)
+      setExtractStatus('STANDBY')
+    }, 1000)
+  }
+
   return (
     <motion.div
       className="fixed top-0 left-0 right-0 z-50 pointer-events-auto"
       initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={headerControls}
       transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
     >
       {/* Main Header Container - Trapezoid Shape */}
       <div
-        className="relative mx-auto overflow-hidden"
+        className="relative mx-auto overflow-visible"
         style={{
           clipPath: 'polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%)',
           background: 'rgba(5, 5, 5, 0.3)',
@@ -105,35 +184,77 @@ const CommandHeader = ({ dailySteps, totalSteps, credits, hero }) => {
           }}
         />
 
+        {/* Particle Stream (STAGE 2) */}
+        {particles.map((particle) => (
+          <motion.div
+            key={particle.id}
+            className="absolute w-2 h-2 rounded-full bg-cyan-neon pointer-events-none"
+            style={{
+              left: '15%',
+              top: '50%',
+              boxShadow: '0 0 8px rgba(0, 229, 255, 1)'
+            }}
+            initial={{ x: 0, opacity: 1, scale: 1 }}
+            animate={{
+              x: window.innerWidth * 0.65,
+              opacity: [1, 1, 0],
+              scale: [1, 1.5, 0]
+            }}
+            transition={{
+              delay: particle.delay,
+              duration: 0.8,
+              ease: 'easeInOut'
+            }}
+          />
+        ))}
+
         {/* Main Content Grid */}
         <div className="relative grid grid-cols-3 gap-4 px-6 py-4">
-          {/* LEFT SECTION: Bio-Reactor (Daily Steps Ring) */}
-          <div className="flex items-center gap-4">
+          {/* LEFT SECTION: Bio-Reactor (Daily Steps Ring) + EXTRACT_AIV Button */}
+          <div className="flex items-center gap-3">
             {/* Daily Steps Ring */}
-            <div className="relative">
-              <svg width="60" height="60" className="transform -rotate-90">
+            <motion.div
+              className="relative"
+              animate={reactorControls}
+            >
+              <svg width="70" height="70" className="transform -rotate-90">
                 {/* Background ring */}
                 <circle
-                  cx="30"
-                  cy="30"
-                  r="24"
+                  cx="35"
+                  cy="35"
+                  r="28"
                   stroke="rgba(0, 229, 255, 0.2)"
                   strokeWidth="4"
                   fill="none"
                 />
                 {/* Progress ring */}
                 <motion.circle
-                  cx="30"
-                  cy="30"
-                  r="24"
+                  cx="35"
+                  cy="35"
+                  r="28"
                   stroke="url(#dailyGradient)"
                   strokeWidth="4"
                   fill="none"
                   strokeLinecap="round"
-                  initial={{ strokeDasharray: '0 150' }}
-                  animate={{ strokeDasharray: `${(dailyProgress / 100) * 150} 150` }}
+                  initial={{ strokeDasharray: '0 176' }}
+                  animate={{ strokeDasharray: `${(dailyProgress / 100) * 176} 176` }}
                   transition={{ duration: 1, ease: 'easeOut' }}
                 />
+                {/* Plasma flare effect */}
+                {isExtracting && (
+                  <circle
+                    cx="35"
+                    cy="35"
+                    r="28"
+                    stroke="rgba(0, 229, 255, 0.6)"
+                    strokeWidth="8"
+                    fill="none"
+                    style={{
+                      filter: 'blur(4px)',
+                      opacity: 0.8
+                    }}
+                  />
+                )}
                 <defs>
                   <linearGradient id="dailyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#00e5ff" />
@@ -143,22 +264,60 @@ const CommandHeader = ({ dailySteps, totalSteps, credits, hero }) => {
               </svg>
               {/* Center percentage */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-xs font-black text-cyan-neon">
+                <span className="font-display text-sm font-black text-cyan-neon">
                   {Math.round(dailyProgress)}%
                 </span>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Daily Stats */}
-            <div className="flex-1 min-w-0">
-              <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
-                Daily Progress
+            {/* Daily Stats + Extract Button */}
+            <div className="flex-1 min-w-0 space-y-2">
+              {/* Stats */}
+              <div>
+                <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
+                  Bio-Reactor
+                </div>
+                <div className="font-display text-base font-black text-white tracking-tight">
+                  {dailySteps.toLocaleString()}
+                </div>
+                <div className="font-mono text-[7px] text-cyan-dim/50 uppercase">
+                  / {dailyGoal.toLocaleString()} steps
+                </div>
               </div>
-              <div className="font-display text-lg font-black text-white tracking-tight">
-                {dailySteps.toLocaleString()}
-              </div>
-              <div className="font-mono text-[7px] text-cyan-dim/50 uppercase">
-                / {dailyGoal.toLocaleString()} steps
+
+              {/* EXTRACT_AIV Button */}
+              <motion.button
+                className="relative w-full py-2 px-3 font-mono text-[9px] uppercase tracking-widest overflow-hidden"
+                style={{
+                  clipPath: 'polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%)',
+                  background: hasStepsToExtract
+                    ? 'linear-gradient(to right, rgba(0, 229, 255, 0.3), rgba(168, 85, 247, 0.3))'
+                    : 'rgba(5, 5, 5, 0.5)',
+                  border: hasStepsToExtract
+                    ? '1px solid rgba(0, 229, 255, 0.6)'
+                    : '1px solid rgba(0, 229, 255, 0.2)',
+                  color: hasStepsToExtract ? '#00e5ff' : 'rgba(0, 229, 255, 0.3)'
+                }}
+                onClick={handleExtractAIV}
+                disabled={!hasStepsToExtract || isExtracting}
+                whileHover={hasStepsToExtract ? { scale: 1.02 } : {}}
+                whileTap={hasStepsToExtract ? { scale: 0.98 } : {}}
+                animate={hasStepsToExtract && !isExtracting ? {
+                  boxShadow: [
+                    '0 0 10px rgba(0, 229, 255, 0.3)',
+                    '0 0 20px rgba(0, 229, 255, 0.6)',
+                    '0 0 10px rgba(0, 229, 255, 0.3)'
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Zap className="inline-block w-3 h-3 mr-1 mb-0.5" strokeWidth={1.2} fill="none" />
+                [EXTRACT_AIV]
+              </motion.button>
+
+              {/* Extraction Status */}
+              <div className="font-mono text-[7px] text-cyan-neon/50 uppercase tracking-widest text-center">
+                {extractStatus}
               </div>
             </div>
           </div>
@@ -185,29 +344,29 @@ const CommandHeader = ({ dailySteps, totalSteps, credits, hero }) => {
             </div>
           </div>
 
-          {/* RIGHT SECTION: Avatar + Total Steps + Credits */}
+          {/* RIGHT SECTION: Avatar + AIV Balance + Credits */}
           <div className="flex items-center justify-end gap-4">
             {/* Total Stats */}
             <div className="flex-1 min-w-0 text-right">
-              {/* Total Kinetic Reserve */}
-              <div className="mb-2">
+              {/* AIV Balance (Kinetic Reserve renamed to AIV) */}
+              <motion.div className="mb-2" animate={balanceControls}>
                 <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
-                  Kinetic Reserve
+                  AIV Reserve
                 </div>
-                <div className="font-display text-lg font-black text-warning-yellow tracking-tight">
-                  {totalSteps.toLocaleString()}
+                <div className="font-display text-xl font-black text-warning-yellow tracking-tight">
+                  {totalAIV.toLocaleString()}
                 </div>
                 <div className="font-mono text-[7px] text-cyan-dim/50 uppercase">
-                  STEPS
+                  AIVANCED
                 </div>
-              </div>
+              </motion.div>
 
               {/* Credits */}
               <div>
                 <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
                   Credits
                 </div>
-                <div className="font-display text-base font-black text-warning-yellow tracking-tight">
+                <div className="font-display text-sm font-black text-warning-yellow tracking-tight">
                   {credits.toLocaleString()} CR
                 </div>
               </div>

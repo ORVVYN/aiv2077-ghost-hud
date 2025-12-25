@@ -19,10 +19,10 @@ const HeroHub = ({ gridId }) => {
   const [selectedHeroId, setSelectedHeroId] = useState('zephyr-01')
   const [hero, setHero] = useState(getHeroById('zephyr-01'))
 
-  // Phase 3: Economy System State
-  const [availableSteps, setAvailableSteps] = useState(15000) // Starting steps
-  const [dailySteps, setDailySteps] = useState(3420) // Daily progress (example)
-  const [totalSteps, setTotalSteps] = useState(156000) // Total kinetic reserve
+  // Phase 3: Economy System State (AIV Currency)
+  const [availableSteps, setAvailableSteps] = useState(15000) // Available for spending (market/dojo)
+  const [dailySteps, setDailySteps] = useState(3420) // Daily progress (pending extraction)
+  const [totalAIV, setTotalAIV] = useState(156000) // Total AIV Reserve (extracted currency)
   const [credits, setCredits] = useState(2500) // Credits (CR)
   const [showMarket, setShowMarket] = useState(false)
   const [showDojo, setShowDojo] = useState(false)
@@ -91,6 +91,16 @@ const HeroHub = ({ gridId }) => {
 
     // Remove consumable from inventory
     item.owned = false
+  }
+
+  // Handle AIV Extraction - Core game mechanic
+  const handleExtractAIV = (extractedSteps) => {
+    // Transfer daily steps to AIV Reserve
+    setTotalAIV(prev => prev + extractedSteps)
+    setAvailableSteps(prev => prev + extractedSteps)
+    setDailySteps(0) // Reset daily progress after extraction
+
+    telegram.notificationOccurred('success')
   }
 
   // Loading fallback for 3D
@@ -207,9 +217,10 @@ const HeroHub = ({ gridId }) => {
       {/* NEW: Command Header - Unified HUD at top */}
       <CommandHeader
         dailySteps={dailySteps}
-        totalSteps={totalSteps}
+        totalAIV={totalAIV}
         credits={credits}
         hero={hero}
+        onExtractAIV={handleExtractAIV}
       />
 
       {/* Left-Edge: Biometrics Panel */}
