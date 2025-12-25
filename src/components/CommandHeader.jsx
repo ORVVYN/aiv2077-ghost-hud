@@ -147,7 +147,7 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           minHeight: '70px'
         }}
       >
-        {/* Particle Stream - From Bio-Reactor to AIV Balance */}
+        {/* Particle Stream - From Bio-Reactor CENTER to AIV Balance */}
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
@@ -155,15 +155,16 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
             style={{
               left: '50%',
               top: `calc(50% + ${particle.offset}px)`,
-              width: '4px',
-              height: '4px',
-              boxShadow: '0 0 8px rgba(0, 229, 255, 1), 0 0 4px rgba(0, 229, 255, 0.8)'
+              width: '5px',
+              height: '5px',
+              boxShadow: '0 0 10px rgba(0, 229, 255, 1), 0 0 5px rgba(0, 229, 255, 0.8)'
             }}
-            initial={{ x: -30, opacity: 1, scale: 1 }}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 0.5 }}
             animate={{
               x: window.innerWidth * 0.35,
+              y: 0,
               opacity: [1, 1, 0],
-              scale: [1, 1.2, 0]
+              scale: [0.5, 1.4, 0]
             }}
             transition={{
               delay: particle.delay,
@@ -289,61 +290,84 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                 className="relative"
                 animate={reactorControls}
               >
-                <svg width="60" height="60" className="relative">
+                <svg width="70" height="70" className="relative transform -rotate-90">
+                {/* Background Circle - 10k limit */}
+                <circle
+                  cx="35"
+                  cy="35"
+                  r="30"
+                  stroke="rgba(0, 229, 255, 0.15)"
+                  strokeWidth="3"
+                  fill="none"
+                />
+
+                {/* Progress Circle - Daily Steps */}
+                <motion.circle
+                  cx="35"
+                  cy="35"
+                  r="30"
+                  stroke="url(#progressGradient)"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeLinecap="round"
+                  initial={{ strokeDasharray: '0 189' }}
+                  animate={{ strokeDasharray: `${(dailyProgress / 100) * 189} 189` }}
+                  transition={{ duration: 1, ease: 'easeOut' }}
+                />
+
                 {/* Plasma Center */}
                 <circle
-                  cx="30"
-                  cy="30"
-                  r="9"
+                  cx="35"
+                  cy="35"
+                  r="10"
                   fill="url(#plasmaGradient)"
                   filter="url(#plasmaGlow)"
                 />
 
-                {/* Ring 3 - Outer */}
+                {/* Ring 3 - Outer decorative */}
                 <motion.g animate={ring3Controls}>
                   <circle
-                    cx="30"
-                    cy="30"
-                    r="24"
-                    stroke="rgba(0, 229, 255, 0.25)"
-                    strokeWidth="1"
+                    cx="35"
+                    cy="35"
+                    r="26"
+                    stroke="rgba(0, 229, 255, 0.2)"
+                    strokeWidth="0.5"
                     fill="none"
-                    strokeDasharray="8 6"
+                    strokeDasharray="6 4"
                   />
                 </motion.g>
 
-                {/* Ring 2 - Middle */}
+                {/* Ring 2 - Middle decorative */}
                 <motion.g animate={ring2Controls}>
                   <circle
-                    cx="30"
-                    cy="30"
-                    r="18"
-                    stroke="rgba(168, 85, 247, 0.35)"
-                    strokeWidth="1.5"
+                    cx="35"
+                    cy="35"
+                    r="20"
+                    stroke="rgba(168, 85, 247, 0.25)"
+                    strokeWidth="1"
                     fill="none"
-                    strokeDasharray="5 5"
+                    strokeDasharray="4 4"
                   />
                 </motion.g>
 
-                {/* Ring 1 - Inner progress */}
+                {/* Ring 1 - Inner decorative */}
                 <motion.g animate={ring1Controls}>
                   <circle
-                    cx="30"
-                    cy="30"
-                    r="13"
-                    stroke="url(#progressGradient)"
-                    strokeWidth="2.5"
+                    cx="35"
+                    cy="35"
+                    r="15"
+                    stroke="rgba(0, 229, 255, 0.3)"
+                    strokeWidth="1"
                     fill="none"
-                    strokeDasharray={`${(dailyProgress / 100) * 82} 82`}
-                    strokeLinecap="round"
+                    strokeDasharray="3 3"
                   />
                 </motion.g>
 
                 {/* Crosshair */}
-                <line x1="30" y1="6" x2="30" y2="11" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
-                <line x1="30" y1="49" x2="30" y2="54" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
-                <line x1="6" y1="30" x2="11" y2="30" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
-                <line x1="49" y1="30" x2="54" y2="30" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="35" y1="5" x2="35" y2="12" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="35" y1="58" x2="35" y2="65" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="5" y1="35" x2="12" y2="35" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="58" y1="35" x2="65" y2="35" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
 
                 <defs>
                   <radialGradient id="plasmaGradient">
@@ -365,11 +389,14 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                 </defs>
               </svg>
 
-              {/* Center percentage */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-[10px] font-black text-cyan-neon drop-shadow-[0_0_4px_rgba(0,229,255,0.8)]">
-                  {Math.round(dailyProgress)}%
-                </span>
+              {/* Center: Steps / Limit */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center transform rotate-90">
+                <div className="font-mono text-[10px] font-black text-cyan-neon drop-shadow-[0_0_6px_rgba(0,229,255,0.8)]">
+                  {dailySteps.toLocaleString()}
+                </div>
+                <div className="font-mono text-[6px] text-cyan-dim/40 uppercase tracking-wider">
+                  / 10,000
+                </div>
               </div>
             </motion.div>
 
@@ -406,11 +433,8 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
               EXTRACT
             </motion.button>
 
-              {/* Steps + Status - Compact */}
-              <div className="flex flex-col items-center gap-0.5">
-                <div className="font-mono text-[9px] text-cyan-neon font-bold uppercase tracking-wider drop-shadow-[0_0_6px_rgba(0,229,255,0.6)]">
-                  {dailySteps.toLocaleString()}
-                </div>
+              {/* Status Only */}
+              <div className="flex flex-col items-center">
                 <div className="font-mono text-[6px] text-cyan-dim/30 uppercase tracking-wider">
                   {extractStatus}
                 </div>
