@@ -435,11 +435,11 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           </div>
         </div>
 
-        {/* CORNER L-BRACKETS ONLY - Thin Cyan */}
-        <div className="absolute top-0.5 left-0.5 w-10 h-10 border-l border-t border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
-        <div className="absolute top-0.5 right-0.5 w-10 h-10 border-r border-t border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
-        <div className="absolute bottom-0.5 left-0.5 w-10 h-10 border-l border-b border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
-        <div className="absolute bottom-0.5 right-0.5 w-10 h-10 border-r border-b border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
+        {/* CORNER L-BRACKETS - Same style as BiometricsPanel */}
+        <div className="absolute top-2 left-2 w-4 h-4 border-l border-t border-cyan-neon/40 pointer-events-none" />
+        <div className="absolute top-2 right-2 w-4 h-4 border-r border-t border-cyan-neon/40 pointer-events-none" />
+        <div className="absolute bottom-2 left-2 w-4 h-4 border-l border-b border-cyan-neon/40 pointer-events-none" />
+        <div className="absolute bottom-2 right-2 w-4 h-4 border-r border-b border-cyan-neon/40 pointer-events-none" />
       </motion.div>
     </div>
   )
