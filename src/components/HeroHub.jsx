@@ -302,26 +302,6 @@ const HeroHub = ({ gridId }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/20 opacity-0 group-hover:opacity-100 transition-opacity" />
           <Package className="w-6 h-6 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
         </motion.button>
-
-        {/* Steps Counter - Tactical Panel */}
-        <motion.div
-          className="relative px-4 py-3 mt-2 overflow-hidden"
-          style={{
-            clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.5)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(0, 229, 255, 0.2)'
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-        >
-          <div className="font-mono text-[9px] text-cyan-dim uppercase text-center mb-1 tracking-widest">Currency</div>
-          <div className="font-display text-base font-black text-warning-yellow text-center whitespace-nowrap tracking-tight">
-            {availableSteps.toLocaleString()}
-          </div>
-          <div className="font-mono text-[8px] text-cyan-dim/50 uppercase text-center mt-0.5">STEPS</div>
-        </motion.div>
       </motion.div>
 
       {/* Phase 3: Modal Windows */}

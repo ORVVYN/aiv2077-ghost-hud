@@ -1,155 +1,92 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useAnimation } from 'framer-motion'
-import { Activity, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import telegram from '../utils/telegram'
 
 /**
- * CommandHeader - Unified Command Tower HUD with AIV_EXTRACTION mechanic
- * Full-width tactical header with symmetrical layout:
- * - Left: Bio-Reactor (Daily Steps Ring) + EXTRACT_AIV button
- * - Center: Neural Waveform
- * - Right: Avatar + AIV Balance + Credits
+ * CommandHeader - SLEEK AAA TACTICAL BAR (Refined)
+ * Slim elegant command bar - 40% height reduction
+ * Left: User Identity | Center: Bio-Reactor + Extract | Right: AIV Balance & Credits
  */
 const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) => {
-  const canvasRef = useRef(null)
   const [isExtracting, setIsExtracting] = useState(false)
   const [extractStatus, setExtractStatus] = useState('STANDBY')
   const [particles, setParticles] = useState([])
 
   const reactorControls = useAnimation()
   const balanceControls = useAnimation()
-  const headerControls = useAnimation()
+  const ring1Controls = useAnimation()
+  const ring2Controls = useAnimation()
+  const ring3Controls = useAnimation()
 
   // Daily steps progress (max 10,000 steps per day)
   const dailyGoal = 10000
   const dailyProgress = Math.min((dailySteps / dailyGoal) * 100, 100)
   const hasStepsToExtract = dailySteps > 0
 
-  // Neural Waveform Animation
+  // Bio-Reactor Rings - Mechanical rotation
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    const width = canvas.width
-    const height = canvas.height
-
-    let animationId
-    let offset = 0
-
-    const drawWaveform = () => {
-      ctx.clearRect(0, 0, width, height)
-
-      // Oscillating waveform
-      ctx.beginPath()
-      ctx.strokeStyle = '#00e5ff'
-      ctx.lineWidth = 2
-
-      const amplitude = height / 3
-      const frequency = 0.02
-      const speed = 2
-
-      for (let x = 0; x < width; x++) {
-        const y = height / 2 + Math.sin((x + offset) * frequency) * amplitude
-        if (x === 0) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-
-      ctx.stroke()
-
-      // Pulse line overlay
-      const pulseX = (offset * 0.5) % width
-      ctx.beginPath()
-      ctx.strokeStyle = 'rgba(0, 229, 255, 0.8)'
-      ctx.lineWidth = 3
-      ctx.moveTo(pulseX, 0)
-      ctx.lineTo(pulseX, height)
-      ctx.stroke()
-
-      // Glow effect
-      ctx.shadowBlur = 15
-      ctx.shadowColor = '#00e5ff'
-      ctx.stroke()
-
-      offset += speed
-      animationId = requestAnimationFrame(drawWaveform)
-    }
-
-    drawWaveform()
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId)
-      }
-    }
-  }, [])
+    ring1Controls.start({
+      rotate: 360,
+      transition: { duration: 6, repeat: Infinity, ease: 'linear' }
+    })
+    ring2Controls.start({
+      rotate: -360,
+      transition: { duration: 10, repeat: Infinity, ease: 'linear' }
+    })
+    ring3Controls.start({
+      rotate: 360,
+      transition: { duration: 14, repeat: Infinity, ease: 'linear' }
+    })
+  }, [ring1Controls, ring2Controls, ring3Controls])
 
   // Handle AIV Extraction with 60fps animation sequence
   const handleExtractAIV = async () => {
     if (!hasStepsToExtract || isExtracting) return
 
     setIsExtracting(true)
-    setExtractStatus('NEURAL_SYNCING...')
+    setExtractStatus('SYNCING...')
 
-    // STAGE 1: IGNITION - Plasma Flare with high-speed rotation
+    // STAGE 1: IGNITION - Plasma Flare
     await reactorControls.start({
       rotate: [0, 360, 720],
-      scale: [1, 1.15, 1],
+      scale: [1, 1.2, 1],
       filter: [
         'drop-shadow(0 0 10px rgba(0, 229, 255, 0.5))',
-        'drop-shadow(0 0 30px rgba(0, 229, 255, 1))',
+        'drop-shadow(0 0 40px rgba(0, 229, 255, 1))',
         'drop-shadow(0 0 10px rgba(0, 229, 255, 0.5))'
       ],
       transition: { duration: 0.6, ease: 'easeOut' }
     })
 
-    // STAGE 2: TRANSFER - Generate particle stream
-    const particleCount = 20
+    // STAGE 2: TRANSFER - Particle stream
+    const particleCount = 35
     const newParticles = Array.from({ length: particleCount }, (_, i) => ({
       id: Date.now() + i,
-      delay: i * 0.03
+      delay: i * 0.015,
+      offset: (Math.random() - 0.5) * 12
     }))
     setParticles(newParticles)
 
-    // Wait for particles to travel
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise(resolve => setTimeout(resolve, 750))
 
-    // STAGE 3: IMPACT - Balance update with spring + screen shake + chromatic aberration
+    // STAGE 3: IMPACT
     telegram.impactOccurred('heavy')
 
-    // Chromatic aberration + screen shake
-    headerControls.start({
-      x: [0, -2, 2, -1, 1, 0],
-      filter: [
-        'none',
-        'drop-shadow(2px 0 0 red) drop-shadow(-2px 0 0 cyan)',
-        'drop-shadow(1px 0 0 red) drop-shadow(-1px 0 0 cyan)',
-        'none'
-      ],
-      transition: { duration: 0.3 }
-    })
-
-    // Spring animation on balance
     await balanceControls.start({
-      scale: [1, 1.3, 0.95, 1.05, 1],
-      color: ['#fbbf24', '#00e5ff', '#fbbf24'],
+      scale: [1, 1.35, 0.95, 1.08, 1],
       transition: {
-        scale: { type: 'spring', stiffness: 300, damping: 10 },
+        scale: { type: 'spring', stiffness: 350, damping: 10 },
         duration: 0.5
       }
     })
 
-    setExtractStatus('TRANSACTION_COMPLETE')
+    setExtractStatus('COMPLETE')
 
-    // Call parent handler to update AIV balance
     if (onExtractAIV) {
       onExtractAIV(dailySteps)
     }
 
-    // Clear particles and reset
     setTimeout(() => {
       setParticles([])
       setIsExtracting(false)
@@ -158,226 +95,105 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
   }
 
   return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 z-50 pointer-events-auto"
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
-    >
-      {/* Main Header Container - Trapezoid Shape */}
+    <div className="fixed top-0 left-0 right-0 z-50 pointer-events-auto">
+      {/* DATA RIBBON - Top 12px scrolling metadata */}
       <div
-        className="relative mx-auto"
+        className="relative w-full h-3 overflow-hidden border-b"
         style={{
-          clipPath: 'polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%)',
-          background: 'rgba(5, 5, 5, 0.6)',
-          backdropFilter: 'blur(40px)',
-          border: '2px solid rgba(0, 229, 255, 0.8)',
-          borderTop: 'none',
-          minHeight: '120px',
-          boxShadow: '0 0 20px rgba(0, 229, 255, 0.5)'
+          background: 'linear-gradient(90deg, rgba(0, 10, 15, 0.85), rgba(0, 15, 20, 0.85))',
+          borderBottomColor: 'rgba(0, 229, 255, 0.25)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.5)'
         }}
       >
-        {/* Micro-Grid Texture Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-10"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(0, 229, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.3) 1px, transparent 1px)',
-            backgroundSize: '8px 8px'
+        <motion.div
+          className="flex gap-8 font-mono text-[7px] text-cyan-neon/35 tracking-widest whitespace-nowrap py-0.5 px-3"
+          animate={{ x: [0, -700] }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: 'linear'
           }}
-        />
+        >
+          <span>◆ UPLINK: ACTIVE</span>
+          <span>◆ LATENCY: 8ms</span>
+          <span>◆ SIGNAL: 98.7%</span>
+          <span>◆ ENCRYPTION: AES-256</span>
+          <span>◆ PKT_LOSS: 0.00%</span>
+          <span>◆ NODE_ID: 0xA7F2</span>
+          <span>◆ SESSION: SECURE</span>
+          <span>◆ UPLINK: ACTIVE</span>
+          <span>◆ LATENCY: 8ms</span>
+          <span>◆ SIGNAL: 98.7%</span>
+        </motion.div>
+      </div>
 
-        {/* Particle Stream (STAGE 2) */}
+      {/* MAIN SLEEK COMMAND BAR - Slim & Elegant */}
+      <motion.div
+        className="relative w-full"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1, type: 'spring', stiffness: 80, damping: 14 }}
+        style={{
+          background: `
+            linear-gradient(180deg, rgba(10, 15, 20, 0.4) 0%, rgba(5, 10, 15, 0.4) 100%)
+          `,
+          backdropFilter: 'blur(40px) saturate(1.1)',
+          borderBottom: '1px solid rgba(0, 229, 255, 0.3)',
+          boxShadow: `
+            0 4px 20px rgba(0, 0, 0, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.02),
+            0 0 40px rgba(0, 229, 255, 0.08)
+          `,
+          minHeight: '70px'
+        }}
+      >
+        {/* Particle Stream */}
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className="absolute w-2 h-2 rounded-full bg-cyan-neon pointer-events-none"
+            className="absolute rounded-full bg-cyan-neon pointer-events-none z-10"
             style={{
-              left: '15%',
-              top: '50%',
-              boxShadow: '0 0 8px rgba(0, 229, 255, 1)'
+              left: 'calc(50% - 200px)',
+              top: `calc(50% + ${particle.offset}px)`,
+              width: '4px',
+              height: '4px',
+              boxShadow: '0 0 8px rgba(0, 229, 255, 1), 0 0 4px rgba(0, 229, 255, 0.8)'
             }}
             initial={{ x: 0, opacity: 1, scale: 1 }}
             animate={{
-              x: window.innerWidth * 0.65,
+              x: window.innerWidth * 0.35,
               opacity: [1, 1, 0],
-              scale: [1, 1.5, 0]
+              scale: [1, 1.2, 0]
             }}
             transition={{
               delay: particle.delay,
-              duration: 0.8,
+              duration: 0.7,
               ease: 'easeInOut'
             }}
           />
         ))}
 
-        {/* Main Content Grid */}
-        <div className="relative grid grid-cols-3 gap-4 px-6 py-4" style={{ background: 'rgba(255, 0, 0, 0.1)' }}>
-          {/* LEFT SECTION: Bio-Reactor (Daily Steps Ring) + EXTRACT_AIV Button */}
-          <div className="flex items-center gap-3" style={{ background: 'rgba(0, 255, 0, 0.1)' }}>
-            {/* Daily Steps Ring */}
-            <motion.div
-              className="relative"
-              animate={reactorControls}
-            >
-              <svg width="70" height="70" className="transform -rotate-90">
-                {/* Background ring */}
-                <circle
-                  cx="35"
-                  cy="35"
-                  r="28"
-                  stroke="rgba(0, 229, 255, 0.2)"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                {/* Progress ring */}
-                <motion.circle
-                  cx="35"
-                  cy="35"
-                  r="28"
-                  stroke="url(#dailyGradient)"
-                  strokeWidth="4"
-                  fill="none"
-                  strokeLinecap="round"
-                  initial={{ strokeDasharray: '0 176' }}
-                  animate={{ strokeDasharray: `${(dailyProgress / 100) * 176} 176` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                />
-                {/* Plasma flare effect */}
-                {isExtracting && (
-                  <circle
-                    cx="35"
-                    cy="35"
-                    r="28"
-                    stroke="rgba(0, 229, 255, 0.6)"
-                    strokeWidth="8"
-                    fill="none"
-                    style={{
-                      filter: 'blur(4px)',
-                      opacity: 0.8
-                    }}
-                  />
-                )}
-                <defs>
-                  <linearGradient id="dailyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#00e5ff" />
-                    <stop offset="100%" stopColor="#a855f7" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              {/* Center percentage */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-sm font-black text-cyan-neon">
-                  {Math.round(dailyProgress)}%
-                </span>
-              </div>
-            </motion.div>
+        {/* Main Content Layout: Left | Center | Right */}
+        <div className="relative grid grid-cols-[auto_1fr_auto] gap-6 items-center px-6 py-3">
 
-            {/* Daily Stats + Extract Button */}
-            <div className="flex-1 min-w-0 space-y-2">
-              {/* Stats */}
-              <div>
-                <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
-                  Bio-Reactor
-                </div>
-                <div className="font-display text-base font-black text-white tracking-tight">
-                  {dailySteps.toLocaleString()}
-                </div>
-                <div className="font-mono text-[7px] text-cyan-dim/50 uppercase">
-                  / {dailyGoal.toLocaleString()} steps
-                </div>
-              </div>
-
-              {/* EXTRACT_AIV Button */}
-              <motion.button
-                className="relative w-full py-2 px-3 font-mono text-[9px] uppercase tracking-widest overflow-hidden"
-                style={{
-                  clipPath: 'polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%)',
-                  background: hasStepsToExtract
-                    ? 'linear-gradient(to right, rgba(0, 229, 255, 0.3), rgba(168, 85, 247, 0.3))'
-                    : 'rgba(5, 5, 5, 0.5)',
-                  border: hasStepsToExtract
-                    ? '1px solid rgba(0, 229, 255, 0.6)'
-                    : '1px solid rgba(0, 229, 255, 0.2)',
-                  color: hasStepsToExtract ? '#00e5ff' : 'rgba(0, 229, 255, 0.3)'
-                }}
-                onClick={handleExtractAIV}
-                disabled={!hasStepsToExtract || isExtracting}
-                whileHover={hasStepsToExtract ? { scale: 1.02 } : {}}
-                whileTap={hasStepsToExtract ? { scale: 0.98 } : {}}
-                animate={hasStepsToExtract && !isExtracting ? {
-                  boxShadow: [
-                    '0 0 10px rgba(0, 229, 255, 0.3)',
-                    '0 0 20px rgba(0, 229, 255, 0.6)',
-                    '0 0 10px rgba(0, 229, 255, 0.3)'
-                  ]
-                } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Zap className="inline-block w-3 h-3 mr-1 mb-0.5" strokeWidth={1.2} fill="none" />
-                [EXTRACT_AIV]
-              </motion.button>
-
-              {/* Extraction Status */}
-              <div className="font-mono text-[7px] text-cyan-neon/50 uppercase tracking-widest text-center">
-                {extractStatus}
-              </div>
-            </div>
-          </div>
-
-          {/* CENTER SECTION: Neural Waveform */}
-          <div className="flex flex-col items-center justify-center" style={{ background: 'rgba(0, 0, 255, 0.1)' }}>
-            {/* Neural Status Label */}
-            <div className="font-mono text-[9px] text-cyan-neon uppercase tracking-widest mb-2 flex items-center gap-2">
-              <Activity className="w-3 h-3" strokeWidth={1.2} fill="none" />
-              <span>NEURAL_LINK: ACTIVE</span>
-            </div>
-
-            {/* Waveform Canvas */}
-            <canvas
-              ref={canvasRef}
-              width={200}
-              height={30}
-              className="opacity-80"
-            />
-
-            {/* Neural Link Code */}
-            <div className="font-mono text-[7px] text-cyan-dim/50 uppercase tracking-widest mt-1">
-              ID: 222222
-            </div>
-          </div>
-
-          {/* RIGHT SECTION: Avatar + AIV Balance + Credits */}
-          <div className="flex items-center justify-end gap-4" style={{ background: 'rgba(255, 255, 0, 0.1)' }}>
-            {/* Total Stats */}
-            <div className="flex-1 min-w-0 text-right">
-              {/* AIV Balance (Kinetic Reserve renamed to AIV) */}
-              <motion.div className="mb-2" animate={balanceControls}>
-                <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
-                  AIV Reserve
-                </div>
-                <div className="font-display text-xl font-black text-warning-yellow tracking-tight">
-                  {totalAIV.toLocaleString()}
-                </div>
-                <div className="font-mono text-[7px] text-cyan-dim/50 uppercase">
-                  AIVANCED
-                </div>
-              </motion.div>
-
-              {/* Credits */}
-              <div>
-                <div className="font-mono text-[8px] text-cyan-dim uppercase tracking-widest">
-                  Credits
-                </div>
-                <div className="font-display text-sm font-black text-warning-yellow tracking-tight">
-                  {credits.toLocaleString()} CR
-                </div>
-              </div>
-            </div>
-
-            {/* Avatar Status Orb */}
+          {/* LEFT: USER IDENTITY PANEL */}
+          <div className="flex items-center gap-3">
+            {/* Avatar - Sharp Hexagonal Ring */}
             <div className="relative">
+              {/* Hexagonal Frame */}
+              <div
+                className="absolute inset-0 -m-1.5"
+                style={{
+                  clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                  background: 'linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(168, 85, 247, 0.1))',
+                  border: '1px solid rgba(0, 229, 255, 0.5)',
+                  boxShadow: '0 0 8px rgba(0, 229, 255, 0.3)'
+                }}
+              />
+
+              {/* Avatar Orb */}
               <motion.div
-                className="w-14 h-14 rounded-full overflow-hidden border-2"
+                className="relative w-11 h-11 rounded-full overflow-hidden border-2"
                 style={{
                   borderColor: hero.appearance.primaryColor,
                   boxShadow: `0 0 12px ${hero.appearance.glowColor}`
@@ -390,12 +206,11 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                   ]
                 }}
                 transition={{
-                  duration: 2,
+                  duration: 2.5,
                   repeat: Infinity,
                   ease: 'easeInOut'
                 }}
               >
-                {/* Avatar placeholder - gradient orb */}
                 <div
                   className="w-full h-full"
                   style={{
@@ -404,56 +219,229 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
                 />
               </motion.div>
 
-              {/* Active status indicator */}
+              {/* Active Status Dot */}
               <motion.div
-                className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-cyan-neon border-2 border-obsidian"
+                className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-cyan-neon border-2 border-obsidian"
                 animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [1, 0.7, 1]
+                  scale: [1, 1.3, 1],
+                  opacity: [1, 0.6, 1]
                 }}
                 transition={{
-                  duration: 1.5,
+                  duration: 1.6,
                   repeat: Infinity,
                   ease: 'easeInOut'
                 }}
               />
             </div>
+
+            {/* Username + Sync Status - Compact Stack */}
+            <div className="flex flex-col gap-1">
+              {/* Username */}
+              <div
+                className="font-tactical text-sm font-black uppercase tracking-tight text-cyan-neon"
+                style={{
+                  transform: 'skewX(-4deg)',
+                  textShadow: '0 0 10px rgba(0, 229, 255, 0.7)',
+                  letterSpacing: '0.03em'
+                }}
+              >
+                ZEPHYR_AGENT
+              </div>
+
+              {/* Sync Status Bar - Compact */}
+              <div className="flex items-center gap-1.5">
+                <div className="relative w-20 h-1 bg-obsidian/50 border border-cyan-neon/25 overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0 h-full"
+                    style={{
+                      background: 'linear-gradient(90deg, #00e5ff, #00ff88)'
+                    }}
+                    animate={{
+                      opacity: [0.6, 1, 0.6],
+                      boxShadow: [
+                        '0 0 3px rgba(0, 229, 255, 0.3)',
+                        '0 0 6px rgba(0, 255, 136, 0.7)',
+                        '0 0 3px rgba(0, 229, 255, 0.3)'
+                      ]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut'
+                    }}
+                  />
+                </div>
+                <span className="font-mono text-[6px] text-cyan-neon/50 uppercase tracking-widest">SYNC</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CENTER: BIO-REACTOR + EXTRACT BUTTON */}
+          <div className="flex items-center justify-center gap-3">
+            {/* Reactor Ring - Compact */}
+            <motion.div
+              className="relative"
+              animate={reactorControls}
+            >
+              <svg width="60" height="60" className="relative">
+                {/* Plasma Center */}
+                <circle
+                  cx="30"
+                  cy="30"
+                  r="9"
+                  fill="url(#plasmaGradient)"
+                  filter="url(#plasmaGlow)"
+                />
+
+                {/* Ring 3 - Outer */}
+                <motion.g animate={ring3Controls}>
+                  <circle
+                    cx="30"
+                    cy="30"
+                    r="24"
+                    stroke="rgba(0, 229, 255, 0.25)"
+                    strokeWidth="1"
+                    fill="none"
+                    strokeDasharray="8 6"
+                  />
+                </motion.g>
+
+                {/* Ring 2 - Middle */}
+                <motion.g animate={ring2Controls}>
+                  <circle
+                    cx="30"
+                    cy="30"
+                    r="18"
+                    stroke="rgba(168, 85, 247, 0.35)"
+                    strokeWidth="1.5"
+                    fill="none"
+                    strokeDasharray="5 5"
+                  />
+                </motion.g>
+
+                {/* Ring 1 - Inner progress */}
+                <motion.g animate={ring1Controls}>
+                  <circle
+                    cx="30"
+                    cy="30"
+                    r="13"
+                    stroke="url(#progressGradient)"
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeDasharray={`${(dailyProgress / 100) * 82} 82`}
+                    strokeLinecap="round"
+                  />
+                </motion.g>
+
+                {/* Crosshair */}
+                <line x1="30" y1="6" x2="30" y2="11" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="30" y1="49" x2="30" y2="54" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="6" y1="30" x2="11" y2="30" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+                <line x1="49" y1="30" x2="54" y2="30" stroke="#00e5ff" strokeWidth="1" opacity="0.5" />
+
+                <defs>
+                  <radialGradient id="plasmaGradient">
+                    <stop offset="0%" stopColor="#ffffff" />
+                    <stop offset="50%" stopColor="#00e5ff" />
+                    <stop offset="100%" stopColor="rgba(0, 229, 255, 0.2)" />
+                  </radialGradient>
+                  <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#00e5ff" />
+                    <stop offset="100%" stopColor="#a855f7" />
+                  </linearGradient>
+                  <filter id="plasmaGlow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge>
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+              </svg>
+
+              {/* Center percentage */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-display text-[10px] font-black text-cyan-neon drop-shadow-[0_0_4px_rgba(0,229,255,0.8)]">
+                  {Math.round(dailyProgress)}%
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Extract Button - Compact Glowing Trapezoid */}
+            <motion.button
+              className="relative py-1.5 px-4 font-mono text-[8px] uppercase tracking-widest overflow-hidden"
+              style={{
+                clipPath: 'polygon(10% 0%, 90% 0%, 100% 50%, 90% 100%, 10% 100%, 0% 50%)',
+                background: hasStepsToExtract
+                  ? 'linear-gradient(135deg, rgba(250, 204, 21, 0.3), rgba(250, 204, 21, 0.2))'
+                  : 'rgba(10, 10, 15, 0.6)',
+                border: hasStepsToExtract
+                  ? '1px solid rgba(250, 204, 21, 0.7)'
+                  : '1px solid rgba(0, 229, 255, 0.2)',
+                color: hasStepsToExtract ? '#facc15' : 'rgba(0, 229, 255, 0.4)',
+                boxShadow: hasStepsToExtract
+                  ? 'inset 0 1px 2px rgba(250, 204, 21, 0.2), 0 0 12px rgba(250, 204, 21, 0.4)'
+                  : 'inset 0 1px 2px rgba(0, 0, 0, 0.5)'
+              }}
+              onClick={handleExtractAIV}
+              disabled={!hasStepsToExtract || isExtracting}
+              whileHover={hasStepsToExtract ? { scale: 1.05 } : {}}
+              whileTap={hasStepsToExtract ? { scale: 0.95 } : {}}
+              animate={hasStepsToExtract && !isExtracting ? {
+                boxShadow: [
+                  'inset 0 1px 2px rgba(250, 204, 21, 0.2), 0 0 12px rgba(250, 204, 21, 0.4)',
+                  'inset 0 1px 2px rgba(250, 204, 21, 0.2), 0 0 20px rgba(250, 204, 21, 0.8)',
+                  'inset 0 1px 2px rgba(250, 204, 21, 0.2), 0 0 12px rgba(250, 204, 21, 0.4)'
+                ]
+              } : {}}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Zap className="inline-block w-2.5 h-2.5 mr-1 mb-px" strokeWidth={2} fill={hasStepsToExtract ? 'currentColor' : 'none'} />
+              EXTRACT
+            </motion.button>
+
+            {/* Steps + Status - Compact */}
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="font-mono text-[7px] text-cyan-neon/40 uppercase tracking-wider">
+                {dailySteps.toLocaleString()}
+              </div>
+              <div className="font-mono text-[6px] text-cyan-dim/25 uppercase tracking-wider">
+                {extractStatus}
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: AIV RESERVE & CREDITS (THE MONEY) */}
+          <div className="flex flex-col items-end gap-1.5">
+            {/* AIV Balance - Large Warning Yellow */}
+            <motion.div animate={balanceControls}>
+              <div className="font-mono text-[6px] text-cyan-dim uppercase tracking-widest opacity-60 text-right">
+                AIV Reserve
+              </div>
+              <div className="font-display text-2xl font-black text-warning-yellow tracking-tight text-right drop-shadow-[0_0_14px_rgba(250,204,21,0.7)]">
+                {totalAIV.toLocaleString()}
+              </div>
+            </motion.div>
+
+            {/* Credits */}
+            <div className="text-right">
+              <div className="font-mono text-[6px] text-cyan-dim uppercase tracking-widest opacity-60">
+                Credits
+              </div>
+              <div className="font-display text-sm font-black text-warning-yellow tracking-tight">
+                {credits.toLocaleString()} CR
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* L-Brackets - Corners */}
-        <div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-cyan-neon/50 pointer-events-none" />
-        <div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-cyan-neon/50 pointer-events-none" />
-        <div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-cyan-neon/50 pointer-events-none" />
-        <div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-cyan-neon/50 pointer-events-none" />
-
-        {/* Metadata Streams - Bottom Edge */}
-        <div className="absolute bottom-0 left-0 right-0 h-3 overflow-hidden pointer-events-none">
-          <motion.div
-            className="flex gap-8 font-mono text-[7px] text-cyan-neon/30 tracking-widest whitespace-nowrap"
-            animate={{ x: [0, -500] }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'linear'
-            }}
-          >
-            <span>UPLINK_STATUS: OK</span>
-            <span>LATENCY: 8ms</span>
-            <span>PKT_LOSS: 0.00%</span>
-            <span>BANDWIDTH: 1.2Gb/s</span>
-            <span>ENCRYPTION: AES-256</span>
-            <span>SESSION_ID: {Math.floor(Math.random() * 999999)}</span>
-            <span>SYNC_RATE: 99.8%</span>
-            <span>CORE_TEMP: 42°C</span>
-            <span>UPLINK_STATUS: OK</span>
-            <span>LATENCY: 8ms</span>
-            <span>PKT_LOSS: 0.00%</span>
-            <span>BANDWIDTH: 1.2Gb/s</span>
-          </motion.div>
-        </div>
-      </div>
-    </motion.div>
+        {/* CORNER L-BRACKETS ONLY - Thin Cyan */}
+        <div className="absolute top-0.5 left-0.5 w-10 h-10 border-l border-t border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
+        <div className="absolute top-0.5 right-0.5 w-10 h-10 border-r border-t border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
+        <div className="absolute bottom-0.5 left-0.5 w-10 h-10 border-l border-b border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
+        <div className="absolute bottom-0.5 right-0.5 w-10 h-10 border-r border-b border-cyan-neon/50 pointer-events-none" style={{ boxShadow: '0 0 6px rgba(0, 229, 255, 0.3)' }} />
+      </motion.div>
+    </div>
   )
 }
 
