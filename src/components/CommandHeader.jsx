@@ -147,19 +147,19 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           minHeight: '70px'
         }}
       >
-        {/* Particle Stream */}
+        {/* Particle Stream - From Bio-Reactor to AIV Balance */}
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
             className="absolute rounded-full bg-cyan-neon pointer-events-none z-10"
             style={{
-              left: 'calc(50% - 200px)',
+              left: '50%',
               top: `calc(50% + ${particle.offset}px)`,
               width: '4px',
               height: '4px',
               boxShadow: '0 0 8px rgba(0, 229, 255, 1), 0 0 4px rgba(0, 229, 255, 0.8)'
             }}
-            initial={{ x: 0, opacity: 1, scale: 1 }}
+            initial={{ x: -30, opacity: 1, scale: 1 }}
             animate={{
               x: window.innerWidth * 0.35,
               opacity: [1, 1, 0],
@@ -277,13 +277,19 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
           </div>
 
           {/* CENTER: BIO-REACTOR + EXTRACT BUTTON */}
-          <div className="flex items-center justify-center gap-3">
-            {/* Reactor Ring - Compact */}
-            <motion.div
-              className="relative"
-              animate={reactorControls}
-            >
-              <svg width="60" height="60" className="relative">
+          <div className="flex flex-col items-center justify-center gap-2">
+            {/* Bio-Reactor Label */}
+            <div className="font-mono text-[7px] text-cyan-neon/50 uppercase tracking-widest">
+              Bio-Reactor
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Reactor Ring - Compact */}
+              <motion.div
+                className="relative"
+                animate={reactorControls}
+              >
+                <svg width="60" height="60" className="relative">
                 {/* Plasma Center */}
                 <circle
                   cx="30"
@@ -400,13 +406,14 @@ const CommandHeader = ({ dailySteps, totalAIV, credits, hero, onExtractAIV }) =>
               EXTRACT
             </motion.button>
 
-            {/* Steps + Status - Compact */}
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="font-mono text-[7px] text-cyan-neon/40 uppercase tracking-wider">
-                {dailySteps.toLocaleString()}
-              </div>
-              <div className="font-mono text-[6px] text-cyan-dim/25 uppercase tracking-wider">
-                {extractStatus}
+              {/* Steps + Status - Compact */}
+              <div className="flex flex-col items-center gap-0.5">
+                <div className="font-mono text-[9px] text-cyan-neon font-bold uppercase tracking-wider drop-shadow-[0_0_6px_rgba(0,229,255,0.6)]">
+                  {dailySteps.toLocaleString()}
+                </div>
+                <div className="font-mono text-[6px] text-cyan-dim/30 uppercase tracking-wider">
+                  {extractStatus}
+                </div>
               </div>
             </div>
           </div>
