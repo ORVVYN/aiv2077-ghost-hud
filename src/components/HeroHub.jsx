@@ -15,7 +15,10 @@ import BattleInterface from './BattleInterface'
 import RewardsScreen from './RewardsScreen'
 import GlobalLadder from './GlobalLadder'
 import SyndicateHub from './SyndicateHub'
+import SyndicateBrowser from './SyndicateBrowser'
+import SyndicateCreate from './SyndicateCreate'
 import { getPlayerSyndicate, syndicates } from '../data/syndicates'
+import { triggerInvasionMode, exitInvasionMode } from '../utils/emergencyLockdown'
 import telegram from '../utils/telegram'
 
 /**
@@ -48,11 +51,18 @@ const HeroHub = ({ gridId }) => {
 
   // Phase 6: Neural Syndicates State
   const [showSyndicate, setShowSyndicate] = useState(false)
-  const [playerSyndicate, setPlayerSyndicate] = useState(getPlayerSyndicate('player-001')) // Mock player ID
+  const [showSyndicateBrowser, setShowSyndicateBrowser] = useState(false)
+  const [showSyndicateCreate, setShowSyndicateCreate] = useState(false)
+  const [playerSyndicate, setPlayerSyndicate] = useState(null) // Start without syndicate for demo
+
+  // Emergency Lockdown Mode State
+  const [hudFlicker, setHudFlicker] = useState(false)
+  const [backgroundMode, setBackgroundMode] = useState('normal') // 'normal' or 'invasion'
+  const [accentColor, setAccentColor] = useState('#00e5ff')
 
   // ZZO-Style Camera Zoom State (for cinematic transitions)
   const [isCameraZooming, setIsCameraZooming] = useState(false)
-  const anyModalOpen = showMarket || showDojo || showInventory || showArena || showLadder || showSyndicate
+  const anyModalOpen = showMarket || showDojo || showInventory || showArena || showLadder || showSyndicate || showSyndicateBrowser || showSyndicateCreate
 
   // Update hero when selection changes
   useEffect(() => {
@@ -199,6 +209,74 @@ const HeroHub = ({ gridId }) => {
     telegram.notificationOccurred('warning')
   }
 
+  const handleJoinSyndicate = (syndicate) => {
+    setPlayerSyndicate(syndicate)
+    setShowSyndicateBrowser(false)
+    telegram.notificationOccurred('success')
+  }
+
+  const handleCreateSyndicate = (syndicateData) => {
+    // Deduct creation cost
+    setAvailableSteps(prev => prev - 50000)
+
+    // Create new syndicate (in real app, this would be API call)
+    const newSyndicate = {
+      ...syndicateData,
+      id: `syn-${Date.now()}`,
+      level: 1,
+      grandReactor: {
+        totalSteps: 0,
+        currentLevelSteps: 0,
+        nextLevelSteps: 100000
+      },
+      members: [{
+        id: 'player-001',
+        gridId: gridId,
+        name: 'You',
+        role: 'leader',
+        contribution: 0,
+        joinedDate: new Date().toISOString().split('T')[0],
+        lastActive: Date.now()
+      }],
+      stats: {
+        founded: new Date().toISOString().split('T')[0],
+        totalMembers: 1,
+        maxMembers: 50,
+        totalContribution: 0,
+        tournamentsWon: 0,
+        sectorsControlled: 0,
+        ranking: 999
+      },
+      chat: {
+        enabled: true,
+        messages: []
+      }
+    }
+
+    setPlayerSyndicate(newSyndicate)
+    setShowSyndicateCreate(false)
+    telegram.notificationOccurred('success')
+  }
+
+  // Demo: Trigger invasion mode on mount (for testing)
+  useEffect(() => {
+    const demoInvasion = setTimeout(() => {
+      triggerInvasionMode({
+        setBackgroundMode,
+        setAccentColor,
+        setHudFlicker,
+        showAlert: (msg) => console.log(msg)
+      })
+
+      // Auto-exit after 5 seconds
+      setTimeout(() => {
+        exitInvasionMode({ setBackgroundMode, setAccentColor })
+      }, 5000)
+    }, 10000) // Trigger 10 seconds after load
+
+    return () => clearTimeout(demoInvasion)
+  }, [])
+
   // Loading fallback for 3D
   const LoadingFallback = () => (
     <div className="absolute inset-0 z-10 flex items-center justify-center">
@@ -217,11 +295,15 @@ const HeroHub = ({ gridId }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 overflow-hidden"
+      className={`fixed inset-0 overflow-hidden ${hudFlicker ? 'hud-flicker' : ''} ${backgroundMode === 'invasion' ? 'invasion-mode' : ''}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Emergency Lockdown Scanline */}
+      {backgroundMode === 'invasion' && (
+        <div className="invasion-scanline" />
+      )}
       {/* ZZO-Style Camera Zoom Overlay */}
       <AnimatePresence>
         {anyModalOpen && (
@@ -395,8 +477,8 @@ const HeroHub = ({ gridId }) => {
           <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
         </motion.button>
 
-        {/* Syndicate Button - Plasma Purple */}
-        {playerSyndicate && (
+        {/* Syndicate Button - Plasma Purple (has syndicate) OR Create/Join (no syndicate) */}
+        {playerSyndicate ? (
           <motion.button
             className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
             style={{
@@ -416,6 +498,56 @@ const HeroHub = ({ gridId }) => {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, transparent, ${playerSyndicate.colors.primary}30)` }} />
             <Users className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
           </motion.button>
+        ) : (
+          <>
+            {/* Create Syndicate Button */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(168, 85, 247, 0.4)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowSyndicateCreate(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Create Syndicate"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10 flex flex-col items-center">
+                <Users className="w-5 h-5 text-plasma-purple" strokeWidth={2} />
+                <div className="text-[8px] text-plasma-purple font-mono mt-0.5">NEW</div>
+              </div>
+            </motion.button>
+
+            {/* Join Syndicate Button */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(0, 229, 255, 0.4)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowSyndicateBrowser(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Browse Syndicates"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10 flex flex-col items-center">
+                <Users className="w-5 h-5 text-cyan-neon" strokeWidth={2} />
+                <div className="text-[8px] text-cyan-neon font-mono mt-0.5">JOIN</div>
+              </div>
+            </motion.button>
+          </>
         )}
 
         {/* Arena Button - Combat Red */}
@@ -584,6 +716,23 @@ const HeroHub = ({ gridId }) => {
             onClose={() => setShowSyndicate(false)}
             onDonate={handleDonateSteps}
             onLeave={handleLeaveSyndicate}
+          />
+        )}
+
+        {/* Phase 6: Syndicate Browser */}
+        {showSyndicateBrowser && (
+          <SyndicateBrowser
+            onJoin={handleJoinSyndicate}
+            onClose={() => setShowSyndicateBrowser(false)}
+          />
+        )}
+
+        {/* Phase 6: Syndicate Create */}
+        {showSyndicateCreate && (
+          <SyndicateCreate
+            playerAIV={availableSteps}
+            onClose={() => setShowSyndicateCreate(false)}
+            onCreate={handleCreateSyndicate}
           />
         )}
       </AnimatePresence>
