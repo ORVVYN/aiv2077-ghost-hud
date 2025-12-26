@@ -251,3 +251,57 @@
 .animate-shake {
   animation: shake 0.2s ease-in-out;
 }
+
+/* Phase 6: Emergency Lockdown Mode - HUD Flicker */
+@keyframes hudFlicker {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.3; }
+  20% { opacity: 1; }
+  30% { opacity: 0.5; }
+  40% { opacity: 1; }
+  50% { opacity: 0.2; }
+  60% { opacity: 1; }
+}
+
+.hud-flicker {
+  animation: hudFlicker 1s ease-in-out;
+}
+
+/* Invasion Mode Background */
+.invasion-mode {
+  position: relative;
+}
+
+.invasion-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 0, 60, 0.15), transparent);
+  pointer-events: none;
+  z-index: 1;
+  animation: invasionPulse 2s ease-in-out infinite;
+}
+
+@keyframes invasionPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* Invasion Alert Scanline */
+.invasion-scanline {
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 0, 60, 0.6), transparent);
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  animation: invasionScan 1.5s linear infinite;
+  z-index: 100;
+  box-shadow: 0 0 20px rgba(255, 0, 60, 0.8);
+}
+
+@keyframes invasionScan {
+  from { top: 0; }
+  to { top: 100%; }
+}
