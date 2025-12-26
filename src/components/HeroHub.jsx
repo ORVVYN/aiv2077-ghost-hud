@@ -425,6 +425,192 @@ const HeroHub = ({ gridId }) => {
               </div>
             </div>
           </motion.div>
+
+          {/* Phase 3: Tactical Action Dock (Inside Hero Container - Right Edge) */}
+          <motion.div
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3 pointer-events-auto"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8, duration: 0.6, type: 'spring', stiffness: 100 }}
+          >
+            {/* Global Ladder Button - Prestige Gold */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(255, 215, 0, 0.4)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowLadder(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(255, 215, 0, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Global Ladder"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+            </motion.button>
+
+            {/* Syndicate Button - Plasma Purple (has syndicate) OR Create/Join (no syndicate) */}
+            {playerSyndicate ? (
+              <motion.button
+                className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                style={{
+                  clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                  background: 'rgba(5, 5, 5, 0.4)',
+                  backdropFilter: 'blur(30px)',
+                  border: `1px solid ${playerSyndicate.colors.primary}40`
+                }}
+                onClick={() => {
+                  telegram.impactOccurred('heavy')
+                  setShowSyndicate(true)
+                }}
+                whileHover={{ scale: 1.05, borderColor: playerSyndicate.colors.primary }}
+                whileTap={{ scale: 0.95 }}
+                title="Neural Syndicate"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, transparent, ${playerSyndicate.colors.primary}30)` }} />
+                <Users className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
+              </motion.button>
+            ) : (
+              <>
+                {/* Create Syndicate Button */}
+                <motion.button
+                  className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                  style={{
+                    clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                    background: 'rgba(5, 5, 5, 0.4)',
+                    backdropFilter: 'blur(30px)',
+                    border: '1px solid rgba(168, 85, 247, 0.4)'
+                  }}
+                  onClick={() => {
+                    telegram.impactOccurred('heavy')
+                    setShowSyndicateCreate(true)
+                  }}
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Create Syndicate"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10 flex flex-col items-center">
+                    <Users className="w-5 h-5 text-plasma-purple" strokeWidth={2} />
+                    <div className="text-[8px] text-plasma-purple font-mono mt-0.5">NEW</div>
+                  </div>
+                </motion.button>
+
+                {/* Join Syndicate Button */}
+                <motion.button
+                  className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                  style={{
+                    clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                    background: 'rgba(5, 5, 5, 0.4)',
+                    backdropFilter: 'blur(30px)',
+                    border: '1px solid rgba(0, 229, 255, 0.4)'
+                  }}
+                  onClick={() => {
+                    telegram.impactOccurred('heavy')
+                    setShowSyndicateBrowser(true)
+                  }}
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Browse Syndicates"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative z-10 flex flex-col items-center">
+                    <Users className="w-5 h-5 text-cyan-neon" strokeWidth={2} />
+                    <div className="text-[8px] text-cyan-neon font-mono mt-0.5">JOIN</div>
+                  </div>
+                </motion.button>
+              </>
+            )}
+
+            {/* Arena Button - Combat Red */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(255, 0, 60, 0.4)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowArena(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(255, 0, 60, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Combat Arena"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-critical-red/0 to-critical-red/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Swords className="w-6 h-6 text-critical-red relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+            </motion.button>
+
+            {/* Market Button - Tactical Trapezoid */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(0, 229, 255, 0.3)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowMarket(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Neural Market"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ShoppingCart className="w-6 h-6 text-cyan-neon relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+            </motion.button>
+
+            {/* Training Dojo Button - Tactical Trapezoid */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(250, 204, 21, 0.3)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowDojo(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(250, 204, 21, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Training Dojo"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Zap className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
+            </motion.button>
+
+            {/* Inventory Button - Tactical Trapezoid */}
+            <motion.button
+              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              style={{
+                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+                background: 'rgba(5, 5, 5, 0.4)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(168, 85, 247, 0.3)'
+              }}
+              onClick={() => {
+                telegram.impactOccurred('heavy')
+                setShowInventory(true)
+              }}
+              whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
+              whileTap={{ scale: 0.95 }}
+              title="Inventory"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Package className="w-6 h-6 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 
@@ -448,192 +634,6 @@ const HeroHub = ({ gridId }) => {
         selectedHeroId={selectedHeroId}
         onHeroChange={setSelectedHeroId}
       />
-
-      {/* Phase 3: Tactical Action Dock (Right Edge) - ZZO Style */}
-      <motion.div
-        className="fixed right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3 pointer-events-auto"
-        initial={{ opacity: 0, x: 30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.8, duration: 0.6, type: 'spring', stiffness: 100 }}
-      >
-        {/* Global Ladder Button - Prestige Gold */}
-        <motion.button
-          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-          style={{
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.4)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(255, 215, 0, 0.4)'
-          }}
-          onClick={() => {
-            telegram.impactOccurred('heavy')
-            setShowLadder(true)
-          }}
-          whileHover={{ scale: 1.05, borderColor: 'rgba(255, 215, 0, 1)' }}
-          whileTap={{ scale: 0.95 }}
-          title="Global Ladder"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
-        </motion.button>
-
-        {/* Syndicate Button - Plasma Purple (has syndicate) OR Create/Join (no syndicate) */}
-        {playerSyndicate ? (
-          <motion.button
-            className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-            style={{
-              clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-              background: 'rgba(5, 5, 5, 0.4)',
-              backdropFilter: 'blur(30px)',
-              border: `1px solid ${playerSyndicate.colors.primary}40`
-            }}
-            onClick={() => {
-              telegram.impactOccurred('heavy')
-              setShowSyndicate(true)
-            }}
-            whileHover={{ scale: 1.05, borderColor: playerSyndicate.colors.primary }}
-            whileTap={{ scale: 0.95 }}
-            title="Neural Syndicate"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, transparent, ${playerSyndicate.colors.primary}30)` }} />
-            <Users className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
-          </motion.button>
-        ) : (
-          <>
-            {/* Create Syndicate Button */}
-            <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-              style={{
-                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-                background: 'rgba(5, 5, 5, 0.4)',
-                backdropFilter: 'blur(30px)',
-                border: '1px solid rgba(168, 85, 247, 0.4)'
-              }}
-              onClick={() => {
-                telegram.impactOccurred('heavy')
-                setShowSyndicateCreate(true)
-              }}
-              whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
-              whileTap={{ scale: 0.95 }}
-              title="Create Syndicate"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10 flex flex-col items-center">
-                <Users className="w-5 h-5 text-plasma-purple" strokeWidth={2} />
-                <div className="text-[8px] text-plasma-purple font-mono mt-0.5">NEW</div>
-              </div>
-            </motion.button>
-
-            {/* Join Syndicate Button */}
-            <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-              style={{
-                clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-                background: 'rgba(5, 5, 5, 0.4)',
-                backdropFilter: 'blur(30px)',
-                border: '1px solid rgba(0, 229, 255, 0.4)'
-              }}
-              onClick={() => {
-                telegram.impactOccurred('heavy')
-                setShowSyndicateBrowser(true)
-              }}
-              whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
-              whileTap={{ scale: 0.95 }}
-              title="Browse Syndicates"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="relative z-10 flex flex-col items-center">
-                <Users className="w-5 h-5 text-cyan-neon" strokeWidth={2} />
-                <div className="text-[8px] text-cyan-neon font-mono mt-0.5">JOIN</div>
-              </div>
-            </motion.button>
-          </>
-        )}
-
-        {/* Arena Button - Combat Red */}
-        <motion.button
-          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-          style={{
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.4)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(255, 0, 60, 0.4)'
-          }}
-          onClick={() => {
-            telegram.impactOccurred('heavy')
-            setShowArena(true)
-          }}
-          whileHover={{ scale: 1.05, borderColor: 'rgba(255, 0, 60, 1)' }}
-          whileTap={{ scale: 0.95 }}
-          title="Combat Arena"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-critical-red/0 to-critical-red/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Swords className="w-6 h-6 text-critical-red relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
-        </motion.button>
-
-        {/* Market Button - Tactical Trapezoid */}
-        <motion.button
-          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-          style={{
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.4)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(0, 229, 255, 0.3)'
-          }}
-          onClick={() => {
-            telegram.impactOccurred('heavy')
-            setShowMarket(true)
-          }}
-          whileHover={{ scale: 1.05, borderColor: 'rgba(0, 229, 255, 1)' }}
-          whileTap={{ scale: 0.95 }}
-          title="Neural Market"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <ShoppingCart className="w-6 h-6 text-cyan-neon relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
-        </motion.button>
-
-        {/* Training Dojo Button - Tactical Trapezoid */}
-        <motion.button
-          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-          style={{
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.4)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(250, 204, 21, 0.3)'
-          }}
-          onClick={() => {
-            telegram.impactOccurred('heavy')
-            setShowDojo(true)
-          }}
-          whileHover={{ scale: 1.05, borderColor: 'rgba(250, 204, 21, 1)' }}
-          whileTap={{ scale: 0.95 }}
-          title="Training Dojo"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Zap className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
-        </motion.button>
-
-        {/* Inventory Button - Tactical Trapezoid */}
-        <motion.button
-          className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
-          style={{
-            clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
-            background: 'rgba(5, 5, 5, 0.4)',
-            backdropFilter: 'blur(30px)',
-            border: '1px solid rgba(168, 85, 247, 0.3)'
-          }}
-          onClick={() => {
-            telegram.impactOccurred('heavy')
-            setShowInventory(true)
-          }}
-          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 1)' }}
-          whileTap={{ scale: 0.95 }}
-          title="Inventory"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Package className="w-6 h-6 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
-        </motion.button>
-      </motion.div>
 
       {/* Phase 3: Modal Windows */}
       <AnimatePresence>
