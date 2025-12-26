@@ -428,14 +428,14 @@ const HeroHub = ({ gridId }) => {
 
           {/* Phase 3: Tactical Action Dock (Inside Hero Container - Right Edge) */}
           <motion.div
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3 pointer-events-auto"
+            className="absolute right-4 top-20 bottom-8 z-30 flex flex-col justify-center gap-2 pointer-events-auto max-h-[calc(100%-7rem)]"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8, duration: 0.6, type: 'spring', stiffness: 100 }}
           >
             {/* Global Ladder Button - Prestige Gold */}
             <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
               style={{
                 clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                 background: 'rgba(5, 5, 5, 0.4)',
@@ -451,13 +451,13 @@ const HeroHub = ({ gridId }) => {
               title="Global Ladder"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+              <Trophy className="w-5 h-5 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
             </motion.button>
 
             {/* Syndicate Button - Plasma Purple (has syndicate) OR Create/Join (no syndicate) */}
             {playerSyndicate ? (
               <motion.button
-                className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
                 style={{
                   clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                   background: 'rgba(5, 5, 5, 0.4)',
@@ -473,13 +473,13 @@ const HeroHub = ({ gridId }) => {
                 title="Neural Syndicate"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, transparent, ${playerSyndicate.colors.primary}30)` }} />
-                <Users className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
+                <Users className="w-5 h-5 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
               </motion.button>
             ) : (
               <>
                 {/* Create Syndicate Button */}
                 <motion.button
-                  className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                  className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
                   style={{
                     clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                     background: 'rgba(5, 5, 5, 0.4)',
@@ -496,14 +496,14 @@ const HeroHub = ({ gridId }) => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="relative z-10 flex flex-col items-center">
-                    <Users className="w-5 h-5 text-plasma-purple" strokeWidth={2} />
-                    <div className="text-[8px] text-plasma-purple font-mono mt-0.5">NEW</div>
+                    <Users className="w-4 h-4 text-plasma-purple" strokeWidth={2} />
+                    <div className="text-[7px] text-plasma-purple font-mono mt-0.5">NEW</div>
                   </div>
                 </motion.button>
 
                 {/* Join Syndicate Button */}
                 <motion.button
-                  className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+                  className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
                   style={{
                     clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                     background: 'rgba(5, 5, 5, 0.4)',
@@ -520,8 +520,8 @@ const HeroHub = ({ gridId }) => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/30 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="relative z-10 flex flex-col items-center">
-                    <Users className="w-5 h-5 text-cyan-neon" strokeWidth={2} />
-                    <div className="text-[8px] text-cyan-neon font-mono mt-0.5">JOIN</div>
+                    <Users className="w-4 h-4 text-cyan-neon" strokeWidth={2} />
+                    <div className="text-[7px] text-cyan-neon font-mono mt-0.5">JOIN</div>
                   </div>
                 </motion.button>
               </>
@@ -529,7 +529,7 @@ const HeroHub = ({ gridId }) => {
 
             {/* Arena Button - Combat Red */}
             <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
               style={{
                 clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                 background: 'rgba(5, 5, 5, 0.4)',
@@ -545,12 +545,12 @@ const HeroHub = ({ gridId }) => {
               title="Combat Arena"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-critical-red/0 to-critical-red/30 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Swords className="w-6 h-6 text-critical-red relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+              <Swords className="w-5 h-5 text-critical-red relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
             </motion.button>
 
             {/* Market Button - Tactical Trapezoid */}
             <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
               style={{
                 clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                 background: 'rgba(5, 5, 5, 0.4)',
@@ -566,12 +566,12 @@ const HeroHub = ({ gridId }) => {
               title="Neural Market"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-neon/0 to-cyan-neon/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <ShoppingCart className="w-6 h-6 text-cyan-neon relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+              <ShoppingCart className="w-5 h-5 text-cyan-neon relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
             </motion.button>
 
             {/* Training Dojo Button - Tactical Trapezoid */}
             <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
               style={{
                 clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                 background: 'rgba(5, 5, 5, 0.4)',
@@ -587,12 +587,12 @@ const HeroHub = ({ gridId }) => {
               title="Training Dojo"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-warning-yellow/0 to-warning-yellow/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Zap className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
+              <Zap className="w-5 h-5 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} fill="currentColor" />
             </motion.button>
 
             {/* Inventory Button - Tactical Trapezoid */}
             <motion.button
-              className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+              className="relative w-14 h-14 flex items-center justify-center overflow-hidden group flex-shrink-0"
               style={{
                 clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
                 background: 'rgba(5, 5, 5, 0.4)',
@@ -608,7 +608,7 @@ const HeroHub = ({ gridId }) => {
               title="Inventory"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-plasma-purple/0 to-plasma-purple/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Package className="w-6 h-6 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
+              <Package className="w-5 h-5 text-plasma-purple relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
             </motion.button>
           </motion.div>
         </div>
