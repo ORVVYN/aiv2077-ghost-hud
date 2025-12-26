@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ShoppingCart, Zap, Package, Swords, Trophy } from 'lucide-react'
+import { ShoppingCart, Zap, Package, Swords, Trophy, Users } from 'lucide-react'
 import { heroes as allHeroes, getHeroById } from '../data/heroes'
 import HeroModel3D from './HeroModel3D'
 import CommandHeader from './CommandHeader'
@@ -14,6 +14,8 @@ import VersusScreen from './VersusScreen'
 import BattleInterface from './BattleInterface'
 import RewardsScreen from './RewardsScreen'
 import GlobalLadder from './GlobalLadder'
+import SyndicateHub from './SyndicateHub'
+import { getPlayerSyndicate, syndicates } from '../data/syndicates'
 import telegram from '../utils/telegram'
 
 /**
@@ -44,9 +46,13 @@ const HeroHub = ({ gridId }) => {
   const [showLadder, setShowLadder] = useState(false)
   const [leaguePoints, setLeaguePoints] = useState(2340) // LP for ranking
 
+  // Phase 6: Neural Syndicates State
+  const [showSyndicate, setShowSyndicate] = useState(false)
+  const [playerSyndicate, setPlayerSyndicate] = useState(getPlayerSyndicate('player-001')) // Mock player ID
+
   // ZZO-Style Camera Zoom State (for cinematic transitions)
   const [isCameraZooming, setIsCameraZooming] = useState(false)
-  const anyModalOpen = showMarket || showDojo || showInventory || showArena || showLadder
+  const anyModalOpen = showMarket || showDojo || showInventory || showArena || showLadder || showSyndicate
 
   // Update hero when selection changes
   useEffect(() => {
@@ -173,6 +179,24 @@ const HeroHub = ({ gridId }) => {
     setOpponent(null)
     setBattleResult(null)
     setBattleRewards(null)
+  }
+
+  // Phase 6: Syndicate Handlers
+  const handleDonateSteps = (syndicateId, amount) => {
+    // Deduct steps from available pool
+    setAvailableSteps(prev => prev - amount)
+
+    // Update syndicate data (in real app, this would be API call)
+    const updatedSyndicate = getPlayerSyndicate('player-001')
+    setPlayerSyndicate(updatedSyndicate)
+
+    telegram.notificationOccurred('success')
+  }
+
+  const handleLeaveSyndicate = (syndicateId) => {
+    setPlayerSyndicate(null)
+    setShowSyndicate(false)
+    telegram.notificationOccurred('warning')
   }
 
   // Loading fallback for 3D
@@ -371,6 +395,29 @@ const HeroHub = ({ gridId }) => {
           <Trophy className="w-6 h-6 text-warning-yellow relative z-10 group-hover:scale-110 transition-transform" strokeWidth={2} />
         </motion.button>
 
+        {/* Syndicate Button - Plasma Purple */}
+        {playerSyndicate && (
+          <motion.button
+            className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
+            style={{
+              clipPath: 'polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%)',
+              background: 'rgba(5, 5, 5, 0.4)',
+              backdropFilter: 'blur(30px)',
+              border: `1px solid ${playerSyndicate.colors.primary}40`
+            }}
+            onClick={() => {
+              telegram.impactOccurred('heavy')
+              setShowSyndicate(true)
+            }}
+            whileHover={{ scale: 1.05, borderColor: playerSyndicate.colors.primary }}
+            whileTap={{ scale: 0.95 }}
+            title="Neural Syndicate"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to right, transparent, ${playerSyndicate.colors.primary}30)` }} />
+            <Users className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" style={{ color: playerSyndicate.colors.primary }} strokeWidth={2} />
+          </motion.button>
+        )}
+
         {/* Arena Button - Combat Red */}
         <motion.button
           className="relative w-16 h-16 flex items-center justify-center overflow-hidden group"
@@ -525,6 +572,18 @@ const HeroHub = ({ gridId }) => {
             hero={hero}
             currentLP={leaguePoints}
             onClose={() => setShowLadder(false)}
+          />
+        )}
+
+        {/* Phase 6: Neural Syndicates */}
+        {showSyndicate && playerSyndicate && (
+          <SyndicateHub
+            syndicateId={playerSyndicate.id}
+            playerId="player-001"
+            playerSteps={availableSteps}
+            onClose={() => setShowSyndicate(false)}
+            onDonate={handleDonateSteps}
+            onLeave={handleLeaveSyndicate}
           />
         )}
       </AnimatePresence>
