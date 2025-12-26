@@ -103,7 +103,7 @@ export const syndicates = [
           author: 'CyberQueen',
           authorId: 'player-001',
           type: 'user',
-          text: 'Let\\'s push for level 6 everyone!',
+          text: "Let's push for level 6 everyone!",
           timestamp: Date.now() - 600000
         },
         {
@@ -117,7 +117,7 @@ export const syndicates = [
           author: 'NeuralKing',
           authorId: 'player-003',
           type: 'user',
-          text: 'I\\'m ready for the tournament!',
+          text: "I'm ready for the tournament!",
           timestamp: Date.now() - 120000
         }
       ]
